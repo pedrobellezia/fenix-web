@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { Professional } from '~/types'
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
 import { Stethoscope, Brain, Star } from 'lucide-vue-next'
 import professionalsData from '~/data/professionals.json'
 
-const professionals = ref(professionalsData)
+const professionals = ref<Professional[]>(professionalsData as Professional[])
 
 const getIconComponent = (specialty: string) => {
   if (

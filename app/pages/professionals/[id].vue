@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import type { Professional } from '~/types'
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
 import { Stethoscope, Brain, Star, MapPin, Clock } from 'lucide-vue-next'
@@ -8,7 +9,7 @@ import profData from '~/data/professionals.json'
 
 const route = useRoute()
 
-const professionals = ref(profData)
+const professionals = ref<Professional[]>(profData as Professional[])
 const id = route.params.id
 
 const professional = professionals.value.find((prof) => prof.id === id)

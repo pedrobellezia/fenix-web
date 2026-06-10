@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { Post } from '~/types'
 import PostCard from '~/components/PostCard.vue'
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
 import postsData from '~/data/posts.json'
 import { Plus } from 'lucide-vue-next'
 
-const posts = ref(postsData)
+const posts = ref<Post[]>(postsData as Post[])
 </script>
 
 <template>

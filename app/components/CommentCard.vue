@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-interface Props {
-  nome: string
-  comentario: string
-  date: string | Date
-}
+import type { Comentario } from '~/types'
+
+type Props = Omit<Comentario, 'id'>
 
 const props = defineProps<Props>()
 

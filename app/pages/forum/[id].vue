@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import type { Post } from '~/types'
 import PostCard from '~/components/PostCard.vue'
 import CommentCard from '~/components/CommentCard.vue'
 import NavBarTop from '~/components/NavBarTop.vue'
@@ -11,8 +12,8 @@ import { Send } from 'lucide-vue-next'
 const route = useRoute()
 const postId = computed(() => route.params.id)
 
-const post = computed(() => {
-  return postsData.find((p) => p.id === postId.value)
+const post = computed<Post | undefined>(() => {
+  return (postsData as Post[]).find((p) => p.id === postId.value)
 })
 </script>
 
