@@ -14,19 +14,7 @@ const sigla = computed(() => {
     .join('')
 })
 
-const formattedDate = computed(() => {
-  const postDate = new Date(props.date)
-  const now = new Date()
-
-  const diffMs = now.getTime() - postDate.getTime()
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-
-  if (diffHours >= 24) {
-    return postDate.toLocaleDateString('pt-BR')
-  } else {
-    return diffHours === 0 ? 'Agora mesmo' : `${diffHours}h`
-  }
-})
+const formattedDate = computed(() => formatRelativeDate(props.date))
 
 const comentariosCount = computed(() => props.comentarios.length)
 </script>

@@ -3,49 +3,10 @@ import { ref } from 'vue'
 import type { Professional } from '~/types'
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
-import { Stethoscope, Brain, Star } from 'lucide-vue-next'
+import { Star } from 'lucide-vue-next'
 import professionalsData from '~/data/professionals.json'
 
 const professionals = ref<Professional[]>(professionalsData as Professional[])
-
-const getIconComponent = (specialty: string) => {
-  if (
-    specialty.includes('Oncologista') ||
-    specialty.includes('Radioterapeuta')
-  ) {
-    return Stethoscope
-  }
-  if (specialty.includes('Psicóloga')) {
-    return Brain
-  }
-  return Stethoscope
-}
-
-const getBgColorClass = (specialty: string) => {
-  if (specialty.includes('Oncologista')) {
-    return 'bg-lilac/20'
-  }
-  if (specialty.includes('Radioterapeuta')) {
-    return 'bg-mint/20'
-  }
-  if (specialty.includes('Psicóloga')) {
-    return 'bg-rose/20'
-  }
-  return 'bg-gray-200'
-}
-
-const getTextColorClass = (specialty: string) => {
-  if (specialty.includes('Oncologista')) {
-    return 'text-lilac'
-  }
-  if (specialty.includes('Radioterapeuta')) {
-    return 'text-mint'
-  }
-  if (specialty.includes('Psicóloga')) {
-    return 'text-rose'
-  }
-  return 'text-gray-700'
-}
 </script>
 
 <template>
@@ -59,12 +20,12 @@ const getTextColorClass = (specialty: string) => {
       >
         <div
           class="w-12 h-12 rounded-full flex items-center justify-center text-lg"
-          :class="getBgColorClass(prof.specialty)"
+          :class="getSpecialtyBgClass(prof.specialty)"
         >
           <component
-            :is="getIconComponent(prof.specialty)"
+            :is="getSpecialtyIcon(prof.specialty)"
             class="w-6 h-6"
-            :class="getTextColorClass(prof.specialty)"
+            :class="getSpecialtyTextClass(prof.specialty)"
           />
         </div>
         <div class="flex-1">

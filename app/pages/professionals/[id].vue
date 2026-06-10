@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import type { Professional } from '~/types'
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
-import { Stethoscope, Brain, Star, MapPin, Clock } from 'lucide-vue-next'
+import { Star, MapPin, Clock } from 'lucide-vue-next'
 import profData from '~/data/professionals.json'
 
 const route = useRoute()
@@ -13,42 +13,6 @@ const professionals = ref<Professional[]>(profData as Professional[])
 const id = route.params.id
 
 const professional = professionals.value.find((prof) => prof.id === id)
-
-const getIconComponent = (specialty: string) => {
-  if (specialty.includes('Oncologista') || specialty.includes('Radioterapeuta')) {
-    return Stethoscope
-  }
-  if (specialty.includes('Psicóloga')) {
-    return Brain
-  }
-  return Stethoscope // Default icon
-}
-
-const getBgColorClass = (specialty: string) => {
-  if (specialty.includes('Oncologista')) {
-    return 'bg-lilac/20'
-  }
-  if (specialty.includes('Radioterapeuta')) {
-    return 'bg-mint/20'
-  }
-  if (specialty.includes('Psicóloga')) {
-    return 'bg-rose/20'
-  }
-  return 'bg-gray-200' // Default background
-}
-
-const getTextColorClass = (specialty: string) => {
-  if (specialty.includes('Oncologista')) {
-    return 'text-lilac'
-  }
-  if (specialty.includes('Radioterapeuta')) {
-    return 'text-mint'
-  }
-  if (specialty.includes('Psicóloga')) {
-    return 'text-rose'
-  }
-  return 'text-gray-700' // Default text color
-}
 </script>
 
 <template>
@@ -58,15 +22,23 @@ const getTextColorClass = (specialty: string) => {
       <div v-if="professional" class="flex flex-col items-center mb-4">
         <div
           class="w-20 h-20 rounded-full flex items-center justify-center text-3xl mb-2"
-          :class="getBgColorClass(professional.specialty)"
+          :class="getSpecialtyBgClass(professional.specialty)"
         >
-          <component :is="getIconComponent(professional.specialty)" class="w-10 h-10" :class="getTextColorClass(professional.specialty)" />
+          <component
+            :is="getSpecialtyIcon(professional.specialty)"
+            class="w-10 h-10"
+            :class="getSpecialtyTextClass(professional.specialty)"
+          />
         </div>
         <h3 class="font-bold text-gray-800">{{ professional.name }}</h3>
-        <p class="text-sm text-gray-500">{{ professional.specialty }} • {{ professional.crm }}</p>
+        <p class="text-sm text-gray-500">
+          {{ professional.specialty }} • {{ professional.crm }}
+        </p>
         <div class="flex items-center gap-1 mt-1">
           <Star class="w-4 h-4 text-amber-400 fill-amber-400" />
-          <span class="text-sm font-bold text-gray-700">{{ professional.rating }}</span>
+          <span class="text-sm font-bold text-gray-700">{{
+            professional.rating
+          }}</span>
         </div>
       </div>
       <div v-else class="text-center text-gray-500 mt-10">
