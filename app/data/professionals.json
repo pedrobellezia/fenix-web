@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1",
+    "name": "Dra. Ana Silva",
+    "specialty": "Oncologista",
+    "crm": "CRM 12345",
+    "rating": 4.9,
+    "description": "Especialista em oncologia clínica com 15 anos de experiência. Atendimento humanizado e focado no bem-estar do paciente.",
+    "location": "Hospital São Lucas, Ala B",
+    "availability": "Seg-Sex, 08:00 - 17:00"
+  },
+  {
+    "id": "2",
+    "name": "Dr. Carlos Mendes",
+    "specialty": "Radioterapeuta",
+    "crm": "CRM 67890",
+    "rating": 4.8,
+    "description": "Experiência em radioterapia de alta precisão para diversos tipos de câncer. Foco na segurança e eficácia do tratamento.",
+    "location": "Clínica Radiológica Central",
+    "availability": "Seg-Sex, 09:00 - 18:00"
+  },
+  {
+    "id": "3",
+    "name": "Dra. Beatriz Lopes",
+    "specialty": "Psicóloga Oncológica",
+    "crm": "CRP 54321",
+    "rating": 5.0,
+    "description": "Apoio psicológico a pacientes oncológicos e seus familiares, promovendo bem-estar emocional durante o tratamento.",
+    "location": "Centro de Apoio ao Paciente",
+    "availability": "Ter-Qui, 10:00 - 19:00"
+  }
+]

@@ -1,0 +1,61 @@
+[
+  {
+    "id": "1",
+    "nome": "Maria Silva",
+    "titulo": "Minha jornada com a quimioterapia",
+    "conteudo": "Hoje foi meu terceiro ciclo de quimioterapia. Me sinto um pouco cansada, mas otimista. A equipe de enfermagem é maravilhosa!",
+    "reacoes": {
+      "love": 5,
+      "support": 8,
+      "strength": 4
+    },
+    "comentarios": [
+      {
+        "id": "c1",
+        "nome": "Carlos Souza",
+        "comentario": "Força, Maria! Estamos com você.",
+        "date": "2024-07-26T11:00:00Z"
+      },
+      {
+        "id": "c2",
+        "nome": "Beatriz Lima",
+        "comentario": "Que bom ler isso! A equipe de enfermagem faz toda a diferença.",
+        "date": "2024-07-26T11:30:00Z"
+      }
+    ],
+    "date": "2024-07-26T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "nome": "João Pereira",
+    "titulo": "Dicas para lidar com a fadiga",
+    "conteudo": "Alguém tem dicas para combater a fadiga durante o tratamento? Tenho tentado caminhadas leves, mas ainda é um desafio.",
+    "reacoes": {
+      "love": 5,
+      "support": 8,
+      "strength": 4
+    },
+    "comentarios": [
+      {
+        "id": "c3",
+        "nome": "Fernanda Rocha",
+        "comentario": "Oi, João! Tente cochilos curtos durante o dia. Me ajudou muito.",
+        "date": "2024-07-25T15:00:00Z"
+      }
+    ],
+    "date": "2024-07-25T14:30:00Z"
+  },
+  {
+    "id": "3",
+    "nome": "Ana Costa",
+    "titulo": "Receita de suco verde energizante",
+    "conteudo": "Compartilhando uma receita de suco verde que me ajuda muito a ter mais energia! Ingredientes: couve, maçã, gengibre e água de coco.",
+    "reacoes": {
+      "love": 5,
+      "support": 8,
+      "strength": 4
+    },
+    "comentarios": [],
+    "date": "2024-07-24T09:15:00Z"
+  }
+]

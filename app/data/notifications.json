@@ -1,0 +1,35 @@
+[
+  {
+    "id": "1",
+    "type": "lembrete",
+    "title": "Lembrete de consulta",
+    "description": "Amanhã às 14:30 - Dra. Silva",
+    "time": "Há 1 hora",
+    "style": {
+      "bg": "bg-lilac/5",
+      "border": "border-lilac"
+    }
+  },
+  {
+    "id": "2",
+    "type": "forum",
+    "title": "Nova resposta no fórum",
+    "description": "Maria comentou na sua postagem",
+    "time": "Há 3 horas",
+    "style": {
+      "bg": "bg-rose-light/30",
+      "border": "border-rose-dark"
+    }
+  },
+  {
+    "id": "3",
+    "type": "sessao",
+    "title": "Sessão registrada ✓",
+    "description": "Quimioterapia Ciclo 3 concluído",
+    "time": "Ontem",
+    "style": {
+      "bg": "bg-green-50",
+      "border": "border-mint"
+    }
+  }
+]
