@@ -13,11 +13,15 @@ const professionals = ref<Professional[]>(profData as Professional[])
 const id = route.params.id
 
 const professional = professionals.value.find((prof) => prof.id === id)
+
+if (!professional) {
+  navigateTo('/error')
+}
 </script>
 
 <template>
   <div id="screen-prof-detail" class="screen flex-col h-full">
-    <NavBarTop :title="professional ? professional.name : 'Detalhes'" />
+    <NavBarTop :title="professional?.name || 'Profissional'" />
     <div class="flex-1 overflow-auto p-4 fade-in">
       <div v-if="professional" class="flex flex-col items-center mb-4">
         <div
