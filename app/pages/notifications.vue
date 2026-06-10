@@ -1,6 +1,6 @@
 <template>
   <div id="screen-notifications" class="screen flex-col h-full">
-    <NavBarTop title="Notificações" />
+    <NavBarTop title="Notificações" :back-arrow="true" />
     <div class="flex-1 overflow-auto p-4 space-y-2 fade-in">
       <div class="bg-lilac/5 border-l-4 border-lilac rounded-r-xl p-3">
         <p class="text-sm font-bold text-gray-800">Lembrete de consulta</p>

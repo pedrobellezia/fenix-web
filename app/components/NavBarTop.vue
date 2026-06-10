@@ -1,12 +1,22 @@
 <script setup lang="ts">
-import { Sparkles, Bell, User } from 'lucide-vue-next'
+import { Sparkles, Bell, User, ArrowLeft } from 'lucide-vue-next'
 
 defineProps({
   title: {
     type: String,
     default: 'Fênix',
   },
+  backArrow: {
+    type: Boolean,
+    default: false,
+  },
 })
+
+const router = useRouter()
+
+function goBack() {
+  router.back()
+}
 </script>
 
 <template>
@@ -14,9 +24,23 @@ defineProps({
     class="bg-gradient-to-r from-lilac to-rose-dark p-4 flex items-center justify-between"
   >
     <div class="flex items-center gap-3">
-      <Sparkles class="w-6 h-6 text-white" @click="navigateTo('/home')" />
+      <button
+        v-if="backArrow"
+        class="flex items-center justify-center"
+        @click="goBack"
+      >
+        <ArrowLeft class="w-6 h-6 text-white" />
+      </button>
+
+      <Sparkles
+        v-else
+        class="w-6 h-6 text-white"
+        @click="navigateTo('/home')"
+      />
+
       <h2 class="text-white font-bold text-lg">{{ title }}</h2>
     </div>
+
     <div class="flex gap-2">
       <button
         class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center relative"
@@ -29,6 +53,7 @@ defineProps({
           3
         </span>
       </button>
+
       <button
         class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center"
         @click="navigateTo('/profile')"
