@@ -2,9 +2,29 @@
 import { computed } from 'vue'
 import { Heart, MessageCircle, HandHeart, Sparkles } from 'lucide-vue-next'
 
-import type { Post } from '~/types'
+interface Reacoes {
+  love: number
+  support: number
+  strength: number
+}
 
-const props = defineProps<Omit<Post, 'id'>>()
+interface Comentario {
+  id: string
+  nome: string
+  comentario: string
+  date: string | Date
+}
+
+interface Props {
+  nome: string
+  conteudo: string
+  reacoes: Reacoes
+  comentarios: Comentario[]
+  date: string | Date
+  titulo?: string
+}
+
+const props = defineProps<Props>()
 
 const sigla = computed(() => {
   return props.nome
@@ -32,7 +52,10 @@ const comentariosCount = computed(() => props.comentarios.length)
 </script>
 
 <template>
-  <div class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm">
+  <div
+    class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm"
+    @click="navigateTo('/forum/{{postId}}')"
+  >
     <div class="flex items-center gap-2 mb-2">
       <div
         class="w-8 h-8 rounded-full bg-lilac/20 flex items-center justify-center text-xs font-bold text-lilac"
