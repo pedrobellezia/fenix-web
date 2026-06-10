@@ -52,7 +52,10 @@ const comentariosCount = computed(() => props.comentarios.length)
 </script>
 
 <template>
-  <div class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm">
+  <div
+    class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm"
+    @click="navigateTo('/forum/{{postId}}')"
+  >
     <div class="flex items-center gap-2 mb-2">
       <div
         class="w-8 h-8 rounded-full bg-lilac/20 flex items-center justify-center text-xs font-bold text-lilac"
@@ -72,17 +75,26 @@ const comentariosCount = computed(() => props.comentarios.length)
     </p>
 
     <div class="flex gap-3 mt-3 pt-2 border-t border-gray-50">
-      <button class="text-xs text-rose-dark flex items-center gap-1">
+      <button
+        class="text-xs text-rose-dark flex items-center gap-1"
+        @click="console.log('love')"
+      >
         <Heart class="w-5 h-5" />
         {{ reacoes.love }}
       </button>
 
-      <button class="text-xs text-blue-500 flex items-center gap-1">
+      <button
+        class="text-xs text-blue-500 flex items-center gap-1"
+        @click="console.log('support')"
+      >
         <HandHeart class="w-5 h-5" />
         {{ reacoes.support }}
       </button>
 
-      <button class="text-xs text-yellow-500 flex items-center gap-1">
+      <button
+        class="text-xs text-yellow-500 flex items-center gap-1"
+        @click="console.log('strength')"
+      >
         <Sparkles class="w-5 h-5" />
         {{ reacoes.strength }}
       </button>
