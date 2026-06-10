@@ -19,6 +19,7 @@ import { Edit, ChevronRight, Bell, Shield, LogOut } from 'lucide-vue-next'
       <div class="space-y-2">
         <button
           class="w-full flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
+          @click="navigateTo('/perfil/edit')"
         >
           <Edit class="w-5 h-5 text-lilac" />
           <span class="text-sm font-medium text-gray-700">Editar perfil</span>
