@@ -73,22 +73,22 @@ const comentariosCount = computed(() => props.comentarios.length)
 
     <div class="flex gap-3 mt-3 pt-2 border-t border-gray-50">
       <button class="text-xs text-rose-dark flex items-center gap-1">
-        <Heart class="w-3 h-3" />
+        <Heart class="w-5 h-5" />
         {{ reacoes.love }}
       </button>
 
       <button class="text-xs text-blue-500 flex items-center gap-1">
-        <HandHeart class="w-3 h-3" />
+        <HandHeart class="w-5 h-5" />
         {{ reacoes.support }}
       </button>
 
       <button class="text-xs text-yellow-500 flex items-center gap-1">
-        <Sparkles class="w-3 h-3" />
+        <Sparkles class="w-5 h-5" />
         {{ reacoes.strength }}
       </button>
 
       <button class="text-xs text-lilac flex items-center gap-1 ml-auto">
-        <MessageCircle class="w-3 h-3" />
+        <MessageCircle class="w-5 h-5" />
         {{ comentariosCount }}
       </button>
     </div>
