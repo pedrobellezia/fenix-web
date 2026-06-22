@@ -3,10 +3,29 @@ import { ref } from 'vue'
 
 const email = ref('')
 const password = ref('')
+const errorMsg = ref('')
 
-const handleLogin = () => {
-  // Simular login e navegar para home
-  navigateTo('/home')
+const config = useRuntimeConfig()
+const token = useCookie('token')
+
+const handleLogin = async () => {
+  errorMsg.value = ''
+  try {
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    const response = await $fetch(`${baseUrl}/auth/login`, {
+      method: 'POST',
+      body: {
+        email: email.value,
+        password: password.value
+      }
+    })
+    
+    token.value = typeof response === 'string' ? response : (response as any)?.token || (response as any)
+    navigateTo('/home')
+  } catch (e) {
+    console.error(e)
+    errorMsg.value = 'Falha no login. Verifique suas credenciais.'
+  }
 }
 </script>
 
@@ -65,6 +84,8 @@ const handleLogin = () => {
           class="w-full rounded-xl border border-rose/40 bg-rose-light/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-lilac/50"
         >
       </div>
+
+      <p v-if="errorMsg" class="text-sm text-red-500 font-medium text-center">{{ errorMsg }}</p>
 
       <button
         class="w-full rounded-xl bg-mint py-3 font-bold text-white shadow-lg shadow-mint/30 transition-all hover:bg-mint-dark"
