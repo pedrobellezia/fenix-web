@@ -1,29 +1,96 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   Camera,
   User,
   Mail,
-  Phone,
-  Calendar,
+  AtSign,
+  Activity,
   Heart,
   CheckCircle,
+  Trash2
 } from 'lucide-vue-next'
 
-const name = ref('Laura Pereira')
-const email = ref('laura.pereira@gmail.com')
-const phone = ref('(11) 98765-4321')
-const birthDate = ref('1998-05-15')
-const bio = ref(
-  'Paciente em tratamento oncológico. Sempre buscando forças na comunidade e compartilhando amor.',
-)
+const config = useRuntimeConfig()
+const token = useCookie('token')
+const userData = ref<any>(null)
+
+const name = ref('')
+const displayName = ref('')
+const email = ref('')
+const treatmentPhase = ref('')
+const bio = ref('')
+
 const showSuccessToast = ref(false)
 
-const handleSave = () => {
-  showSuccessToast.value = true
-  setTimeout(() => {
-    showSuccessToast.value = false
-  }, 2000)
+const fetchProfile = async () => {
+  if (!token.value) {
+    navigateTo('/login')
+    return
+  }
+  try {
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    const data: any = await $fetch(`${baseUrl}/me`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+    userData.value = data
+    name.value = data.name || ''
+    displayName.value = data.displayName || ''
+    email.value = data.email || ''
+    treatmentPhase.value = data.treatmentPhase || ''
+    bio.value = data.bio || ''
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+onMounted(() => {
+  fetchProfile()
+})
+
+const handleSave = async () => {
+  try {
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    await $fetch(`${baseUrl}/me`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
+      body: {
+        ...userData.value,
+        name: name.value,
+        displayName: displayName.value,
+        email: email.value,
+        treatmentPhase: treatmentPhase.value,
+        bio: bio.value
+      }
+    })
+    showSuccessToast.value = true
+    setTimeout(() => {
+      showSuccessToast.value = false
+    }, 2000)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const handleDeleteAccount = async () => {
+  if (!confirm('Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita.')) return
+  try {
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    await $fetch(`${baseUrl}/me`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+    token.value = null
+    navigateTo('/login')
+  } catch (e) {
+    console.error(e)
+  }
 }
 </script>
 
@@ -43,7 +110,7 @@ const handleSave = () => {
           <div
             class="w-24 h-24 rounded-full bg-gradient-to-br from-lilac to-rose flex items-center justify-center text-4xl text-white font-bold shadow-lg"
           >
-            LP
+            {{ name?.charAt(0).toUpperCase() || 'U' }}
           </div>
           <button
             class="absolute bottom-0 right-0 bg-mint text-white p-2 rounded-full shadow-lg hover:bg-mint-dark transition-all duration-300 hover:scale-105 active:scale-95 border-2 border-white"
@@ -94,36 +161,37 @@ const handleSave = () => {
           </div>
         </div>
 
-        <!-- Phone Input -->
+        <!-- Display Name Input -->
         <div>
           <label
             class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5 ml-1"
           >
-            Telefone / Celular
+            Nome de Exibição
           </label>
           <div class="relative flex items-center">
-            <Phone class="absolute left-4 w-5 h-5 text-lilac/70" />
+            <AtSign class="absolute left-4 w-5 h-5 text-lilac/70" />
             <input
-              v-model="phone"
-              type="tel"
-              placeholder="(00) 00000-0000"
+              v-model="displayName"
+              type="text"
+              placeholder="Como quer ser chamado"
               class="w-full pl-12 pr-4 py-3 rounded-xl border border-rose-dark/20 bg-rose-light/20 focus:border-lilac focus:bg-white focus:outline-none focus:ring-2 focus:ring-lilac/25 transition-all text-sm text-gray-700 font-medium"
             >
           </div>
         </div>
 
-        <!-- Birth Date Input -->
+        <!-- Treatment Phase Input -->
         <div>
           <label
             class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5 ml-1"
           >
-            Data de Nascimento
+            Fase de Tratamento
           </label>
           <div class="relative flex items-center">
-            <Calendar class="absolute left-4 w-5 h-5 text-lilac/70" />
+            <Activity class="absolute left-4 w-5 h-5 text-lilac/70" />
             <input
-              v-model="birthDate"
-              type="date"
+              v-model="treatmentPhase"
+              type="text"
+              placeholder="Ex: Fase Inicial, Manutenção..."
               class="w-full pl-12 pr-4 py-3 rounded-xl border border-rose-dark/20 bg-rose-light/20 focus:border-lilac focus:bg-white focus:outline-none focus:ring-2 focus:ring-lilac/25 transition-all text-sm text-gray-700 font-medium"
             >
           </div>
@@ -158,9 +226,16 @@ const handleSave = () => {
         </button>
         <button
           class="w-full py-3 bg-gray-50 text-gray-500 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-300 border border-gray-100 flex items-center justify-center"
-          @click="navigateTo('/profile')"
+          @click="navigateTo('/perfil')"
         >
           Cancelar
+        </button>
+        <button
+          class="w-full py-3 bg-red-50 text-red-500 font-semibold rounded-xl hover:bg-red-100 transition-all duration-300 border border-red-100 flex items-center justify-center gap-2 mt-4"
+          @click="handleDeleteAccount"
+        >
+          <Trash2 class="w-5 h-5" />
+          Deletar Conta
         </button>
       </div>
     </div>

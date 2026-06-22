@@ -2,6 +2,39 @@
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
 import { Edit, ChevronRight, Bell, Shield, LogOut } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue'
+
+const config = useRuntimeConfig()
+const token = useCookie('token')
+const user = ref<any>(null)
+
+const fetchProfile = async () => {
+  if (!token.value) {
+    navigateTo('/login')
+    return
+  }
+  
+  try {
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    const data = await $fetch(`${baseUrl}/me`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+    user.value = data
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+onMounted(() => {
+  fetchProfile()
+})
+
+const handleLogout = () => {
+  token.value = null
+  navigateTo('/login')
+}
 </script>
 <template>
   <div id="screen-profile" class="screen flex-col h-full">
@@ -9,12 +42,13 @@ import { Edit, ChevronRight, Bell, Shield, LogOut } from 'lucide-vue-next'
     <div class="flex-1 overflow-auto p-4 fade-in">
       <div class="flex flex-col items-center mb-5">
         <div
+          v-if="user"
           class="w-20 h-20 rounded-full bg-gradient-to-br from-lilac to-rose flex items-center justify-center text-3xl text-white font-bold mb-2"
         >
-          LP
+          {{ user.name?.charAt(0).toUpperCase() || 'U' }}
         </div>
-        <h3 class="font-bold text-gray-800">Laura Pereira</h3>
-        <p class="text-sm text-gray-500">Paciente • Membro desde Jun 2025</p>
+        <h3 v-if="user" class="font-bold text-gray-800">{{ user.name || 'Usuário' }}</h3>
+        <p v-if="user" class="text-sm text-gray-500 capitalize">{{ user.role || 'Paciente' }}</p>
       </div>
       <div class="space-y-2">
         <button
@@ -42,7 +76,7 @@ import { Edit, ChevronRight, Bell, Shield, LogOut } from 'lucide-vue-next'
         </button>
         <button
           class="w-full flex items-center gap-3 p-3 bg-red-50 rounded-xl hover:bg-red-100 transition mt-4"
-          @click="navigateTo('/login')"
+          @click="handleLogout"
         >
           <LogOut class="w-5 h-5 text-red-500" />
           <span class="text-sm font-medium text-red-600">Sair</span>
