@@ -56,7 +56,7 @@ function goBack() {
 
       <button
         class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center"
-        @click="navigateTo('/profile')"
+        @click="navigateTo('/perfil')"
       >
         <User class="w-4 h-4 text-white" />
       </button>

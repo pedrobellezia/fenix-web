@@ -49,11 +49,11 @@ const isActive = (path: string) => {
     </button>
     <button
       class="flex-1 py-3 flex flex-col items-center gap-1"
-      :class="isActive('/profile') ? 'text-lilac' : 'text-gray-400'"
-      @click="navigateTo('/profile')"
+      :class="isActive('/perfil') ? 'text-lilac' : 'text-gray-400'"
+      @click="navigateTo('/perfil')"
     >
       <User class="w-5 h-5" />
-      <span class="text-[10px]" :class="{ 'font-bold': isActive('/profile') }"
+      <span class="text-[10px]" :class="{ 'font-bold': isActive('/perfil') }"
         >Perfil</span
       >
     </button>
