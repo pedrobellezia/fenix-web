@@ -5,6 +5,12 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  runtimeConfig: {
+    public: {
+      baseApiUrl: process.env.BASE_API_URL || 'http://192.168.4.248:8081',
+    },
+  },
+
   app: {
     head: {
       link: [
