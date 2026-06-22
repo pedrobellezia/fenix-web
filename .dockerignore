@@ -1,0 +1,11 @@
+.git
+.gitignore
+.idea
+.vscode
+.nuxt
+.output
+node_modules
+npm-debug.log
+Dockerfile
+docker-compose.yml
+README.md

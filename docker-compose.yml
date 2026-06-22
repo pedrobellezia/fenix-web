@@ -1,0 +1,11 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fenix-web
+    restart: always
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
