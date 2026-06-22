@@ -32,7 +32,10 @@ onMounted(() => {
 })
 
 const handleLogout = () => {
-  token.value = null
+  const tokenCookie = useCookie('token')
+  const userCookie = useCookie('user')
+  tokenCookie.value = null
+  userCookie.value = null
   navigateTo('/login')
 }
 </script>

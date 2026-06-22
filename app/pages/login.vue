@@ -6,7 +6,8 @@ const password = ref('')
 const errorMsg = ref('')
 
 const config = useRuntimeConfig()
-const token = useCookie('token')
+const token = useCookie('token', { maxAge: 60 * 60 * 24 * 7 }) // 7 dias de expiração
+const userCookie = useCookie('user', { maxAge: 60 * 60 * 24 * 7 }) // 7 dias de expiração
 
 const handleLogin = async () => {
   errorMsg.value = ''
@@ -20,7 +21,19 @@ const handleLogin = async () => {
       }
     })
     
-    token.value = typeof response === 'string' ? response : (response as any)?.token || (response as any)
+    const rawToken = typeof response === 'string' ? response : (response as any)?.token || (response as any)
+    token.value = rawToken
+    
+    // Busca informações do usuário autenticado
+    const userData = await $fetch(`${baseUrl}/me`, {
+      headers: {
+        Authorization: `Bearer ${rawToken}`
+      }
+    })
+    
+    // Salva o cookie de usuário de forma codificada em Base64
+    userCookie.value = btoa(JSON.stringify(userData))
+    
     navigateTo('/home')
   } catch (e) {
     console.error(e)

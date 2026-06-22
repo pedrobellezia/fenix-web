@@ -1,17 +1,19 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  // Pega o token armazenado nos cookies
+  // Pega o token e o usuário armazenado nos cookies
   const token = useCookie('token')
+  const user = useCookie('user')
 
-  // Array com as rotas que não precisam de autenticação
+  // Rotas que não exigem o usuário logado
   const publicRoutes = ['/login', '/register', '/']
+  const isPublicRoute = publicRoutes.includes(to.path)
 
-  // Se o usuário não tem token e está tentando acessar uma rota protegida
-  if (!token.value && !publicRoutes.includes(to.path)) {
-    return navigateTo('/login') // Redireciona para o login
+  // Se NÃO está logado e tenta acessar rota protegida -> Vai pro login
+  if ((!token.value || !user.value) && !isPublicRoute) {
+    return navigateTo('/login')
   }
 
-  // Opcional: Se o usuário já está logado e tenta acessar login/register
-  if (token.value && (to.path === '/login' || to.path === '/register' || to.path === '/')) {
-    return navigateTo('/home') // Redireciona para a home
+  // Se ESTÁ logado e tenta acessar rotas de login/registro/raiz -> Vai pra home
+  if (token.value && user.value && isPublicRoute) {
+    return navigateTo('/home')
   }
 })
