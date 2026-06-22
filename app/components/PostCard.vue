@@ -1,208 +1,92 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { Heart, MessageCircle, HandHeart, BicepsFlexed } from 'lucide-vue-next'
+import { Heart, HandHeart, BicepsFlexed, MessageCircle } from 'lucide-vue-next'
+import { useCookie, useRuntimeConfig } from '#app'
 
-// Props interface supporting both mock legacy data and backend API data structures
-interface PostProps {
-  // Backend API structures
-  title?: string
-  content?: string
-  createdAt?: string | Date
-  active?: boolean
-  user?: {
-    id: string
-    name: string
-    email?: string
-    picUrl?: string
-    role?: string
-  }
-  likes?: Array<{
-    id: string
-    user?: {
-      id: string
-      name?: string
-      email?: string
-      picUrl?: string
-      role?: string
-    }
-    reactionType: 'heart' | 'handheart' | 'armflex'
-    createdAt?: string
-  }>
-  media?: Array<{
-    id: string
-    mediaUrl: string
-    mediaType: string
-    mimeType: string
-    createdAt?: string
-  }>
-}
-
-const props = defineProps<PostProps>()
-
-const emit = defineEmits<{
-  (e: 'liked', payload: { postId: string; reactionType: 'heart' | 'handheart' | 'armflex' }): void
-}>()
-
-const config = useRuntimeConfig()
-const token = useCookie('token')
-
-// Helper to extract user ID from the JWT token
-const getUserIdFromToken = (tokenValue: string | null | undefined): string | null => {
-  if (!tokenValue) return null
-  try {
-    const payload = tokenValue.split('.')[1]
-    if (!payload) return null
-    const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
-    const parsed = JSON.parse(decodedPayload)
-    return parsed.id || parsed.sub || parsed.userId || null
-  } catch (e) {
-    console.error('Error decoding JWT payload:', e)
-    return null
-  }
-}
-
-// Current logged in user ID from token
-const currentUserId = computed(() => getUserIdFromToken(token.value))
-
-// Reactive local states for optimistic updates and compatibility
-const localLikes = ref<any[]>(props.likes ? [...props.likes] : [])
-const localReacoes = ref({
-  love: props.reacoes?.love || 0,
-  support: props.reacoes?.support || 0,
-  strength: props.reacoes?.strength || 0
+const props = defineProps({
+  id: { type: String, required: true },
+  user: { type: Object, default: () => ({}) },
+  title: { type: String, default: '' },
+  titulo: { type: String, default: '' },
+  content: { type: String, default: '' },
+  conteudo: { type: String, default: '' },
+  media: { type: Array, default: () => [] },
+  likes: { type: Array, default: () => [] },
+  createdAt: { type: String, default: '' },
+  comentariosCount: { type: [Number, String], default: 0 }
 })
+
+const token = useCookie('token')
+const authUserStr = useCookie('user')
+const config = useRuntimeConfig()
+
+// Pega o ID do usuário a partir do cookie codificado em Base64
+const currentUserId = computed(() => {
+  if (!authUserStr.value) return null;
+  try {
+    const decodedStr = atob(authUserStr.value as string)
+    const userObj = JSON.parse(decodedStr)
+    return userObj.id
+  } catch(e) {
+    return null;
+  }
+})
+
+const localLikes = ref([...(props.likes || [])])
 
 watch(() => props.likes, (newLikes) => {
-  if (newLikes) {
-    localLikes.value = [...newLikes]
-  }
+  localLikes.value = [...(newLikes || [])]
 }, { deep: true })
 
-watch(() => props.reacoes, (newReacoes) => {
-  if (newReacoes) {
-    localReacoes.value = {
-      love: newReacoes.love || 0,
-      support: newReacoes.support || 0,
-      strength: newReacoes.strength || 0
-    }
-  }
-}, { deep: true })
+const heartCount = computed(() => localLikes.value.filter((l: any) => l.reactionType === 'heart').length)
+const handheartCount = computed(() => localLikes.value.filter((l: any) => l.reactionType === 'handheart').length)
+const armflexCount = computed(() => localLikes.value.filter((l: any) => l.reactionType === 'armflex').length)
 
-// Helper to determine if the logged in user reacted
-const hasReacted = (reactionType: 'heart' | 'handheart' | 'armflex') => {
-  if (localLikes.value.length > 0 && currentUserId.value) {
-    return localLikes.value.some(
-      (l) => l.user?.id === currentUserId.value && l.reactionType === reactionType
-    )
-  }
-  return false
+const hasReacted = (type: string) => {
+  if (!currentUserId.value) return false;
+  return localLikes.value.some((l: any) => l.reactionType === type && l.user?.id === currentUserId.value)
 }
 
-// Computeds for display mapping
-const authorName = computed(() => props.user?.name || props.nome || 'Usuário')
-
-const sigla = computed(() => {
-  return authorName.value
-    .split(' ')
-    .slice(0, 2)
-    .map((name) => name[0]?.toUpperCase() || '')
-    .join('')
-})
-
-const formattedDate = computed(() => {
-  const rawDate = props.createdAt || props.date
-  return rawDate ? formatRelativeDate(rawDate) : ''
-})
-
-const comentariosCount = computed(() => props.comentarios?.length || 0)
-
-// Reaction counters
-const heartCount = computed(() => {
-  if (props.likes || localLikes.value.length > 0) {
-    return localLikes.value.filter((l) => l.reactionType === 'heart').length
-  }
-  return localReacoes.value.love
-})
-
-const handheartCount = computed(() => {
-  if (props.likes || localLikes.value.length > 0) {
-    return localLikes.value.filter((l) => l.reactionType === 'handheart').length
-  }
-  return localReacoes.value.support
-})
-
-const armflexCount = computed(() => {
-  if (props.likes || localLikes.value.length > 0) {
-    return localLikes.value.filter((l) => l.reactionType === 'armflex').length
-  }
-  return localReacoes.value.strength
-})
-
-// React / like toggling
-const toggleLike = async (reactionType: 'heart' | 'handheart' | 'armflex') => {
-  if (!token.value) {
-    console.warn('Usuário não autenticado.')
-    navigateTo('/login')
-    return
-  }
-  if (!props.id) {
-    console.warn('ID do post não fornecido.')
-    return
-  }
-
-  const userIdVal = currentUserId.value
-
-  // Optimistic UI updates
-  if (props.likes || localLikes.value.length > 0) {
-    const existingIndex = localLikes.value.findIndex(
-      (l) => l.user?.id === userIdVal && l.reactionType === reactionType
-    )
-    if (existingIndex > -1) {
-      localLikes.value.splice(existingIndex, 1)
-    } else {
-      localLikes.value.push({
-        id: `temp-${Date.now()}`,
-        reactionType,
-        user: { id: userIdVal || 'current-user' }
-      })
-    }
-  } else {
-    if (reactionType === 'heart') localReacoes.value.love++
-    else if (reactionType === 'handheart') localReacoes.value.support++
-    else if (reactionType === 'armflex') localReacoes.value.strength++
-  }
+const toggleLike = async (type: string) => {
+  if (hasReacted(type)) return; // Evita reagir 2 vezes
 
   try {
     const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
     
-    await $fetch(`${baseUrl}/api/postlikes`, {
+    const res = await $fetch(`${baseUrl}/api/postlikes`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${token.value}`
+        Authorization: `Bearer ${token.value}`,
+        'Content-Type': 'application/json'
       },
       body: {
-        post: {
-          id: props.id
-        },
-        reactionType
+        post: { id: props.id },
+        reactionType: type
       }
     })
-
-    emit('liked', { postId: props.id, reactionType })
-  } catch (error) {
-    console.error('Erro ao reagir ao post:', error)
-    // Rollback optimistic update
-    if (props.likes) {
-      localLikes.value = [...props.likes]
-    } else if (props.reacoes) {
-      localReacoes.value = {
-        love: props.reacoes.love || 0,
-        support: props.reacoes.support || 0,
-        strength: props.reacoes.strength || 0
-      }
+    
+    if (res) {
+      localLikes.value.push(res)
     }
+  } catch (e) {
+    console.error('Error posting like', e)
   }
 }
+
+const authorName = computed(() => props.user?.name || 'Usuário')
+
+const sigla = computed(() => {
+  if (props.user?.name) {
+    return props.user.name.substring(0, 2).toUpperCase()
+  }
+  return 'US'
+})
+
+const formattedDate = computed(() => {
+  if (!props.createdAt) return ''
+  const date = new Date(props.createdAt)
+  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(date)
+})
 </script>
 
 <template>
