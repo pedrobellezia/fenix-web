@@ -1,12 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import PostCard from '~/components/PostCard.vue'
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
-import postsData from '~/data/posts.json'
 import { Quote, MessageCircle, Users } from 'lucide-vue-next'
 
-const posts = ref(postsData)
+const posts = ref<any[]>([])
+const config = useRuntimeConfig()
+const token = useCookie('token')
+
+onMounted(async () => {
+  try {
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    const response = await $fetch(`${baseUrl}/api/posts`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+    posts.value = response as any[]
+  } catch (e) {
+    console.error('Error fetching posts:', e)
+  }
+})
 </script>
 
 <template>
@@ -51,12 +66,13 @@ const posts = ref(postsData)
           <PostCard
             v-for="post in posts"
             :key="post.id"
-            :nome="post.nome"
-            :titulo="post.titulo"
-            :conteudo="post.conteudo"
-            :reacoes="post.reacoes"
-            :comentarios="post.comentarios"
-            :date="post.date"
+            :id="post.id"
+            :user="post.user"
+            :title="post.title"
+            :content="post.content"
+            :likes="post.likes"
+            :media="post.media"
+            :createdAt="post.createdAt"
           />
         </div>
       </div>

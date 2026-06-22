@@ -1,13 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { Post } from '~/types'
 import PostCard from '~/components/PostCard.vue'
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
-import postsData from '~/data/posts.json'
+import CreatePostPopup from '~/components/CreatePostPopup.vue'
 import { Plus } from 'lucide-vue-next'
 
-const posts = ref<Post[]>(postsData as Post[])
+const posts = ref<any[]>([])
+const config = useRuntimeConfig()
+const token = useCookie('token')
+const isCreatePostOpen = ref(false)
+
+const fetchPosts = async () => {
+  try {
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    const response = await $fetch(`${baseUrl}/api/posts`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+    posts.value = response as any[]
+  } catch (e) {
+    console.error('Error fetching posts:', e)
+  }
+}
+
+onMounted(() => {
+  fetchPosts()
+})
+
+const handlePostCreated = () => {
+  fetchPosts()
+}
 </script>
 
 <template>
@@ -44,25 +69,29 @@ const posts = ref<Post[]>(postsData as Post[])
           class="block"
         >
           <PostCard
-            :nome="post.nome"
-            :titulo="post.titulo"
-            :conteudo="post.conteudo"
-            :reacoes="post.reacoes"
-            :comentarios="post.comentarios"
-            :date="post.date"
+            :id="post.id"
+            :user="post.user"
+            :title="post.title"
+            :content="post.content"
+            :likes="post.likes"
+            :media="post.media"
+            :createdAt="post.createdAt"
           />
         </NuxtLink>
       </div>
     </div>
-    <div class="p-4 border-t border-gray-100">
-      <NuxtLink
-        to="/new-post"
-        class="w-full py-3 bg-mint text-white font-bold rounded-xl hover:bg-mint-dark transition flex items-center justify-center gap-2 shadow-lg shadow-mint/30"
-      >
-        <Plus class="w-4 h-4" />
-        Nova Postagem
-      </NuxtLink>
-    </div>
+    <!-- Floating Action Button -->
+    <button
+      @click="isCreatePostOpen = true"
+      class="fixed bottom-24 right-6 z-40 w-14 h-14 bg-mint text-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.2)] shadow-mint/40 hover:scale-105 active:scale-95 transition-all"
+    >
+      <Plus class="w-6 h-6" />
+    </button>
+    
+    <CreatePostPopup 
+      v-model="isCreatePostOpen" 
+      @post-created="handlePostCreated" 
+    />
     <NavBarBottom />
   </div>
 </template>
