@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { ArrowLeft } from 'lucide-vue-next'
 
-const role = ref('paciente')
+const role = ref('PACIENTE')
 const name = ref('')
 const displayName = ref('')
 const email = ref('')
