@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { Heart, HandHeart, BicepsFlexed, MessageCircle } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+import { Heart, HandHeart, BicepsFlexed, MessageCircle, Trash2 } from 'lucide-vue-next'
 import { useCookie, useRuntimeConfig } from '#app'
 
 const props = defineProps({
-  id: { type: String, required: true },
+  id: { type: String, default: '' },
   user: { type: Object, default: () => ({}) },
   title: { type: String, default: '' },
   titulo: { type: String, default: '' },
@@ -16,9 +17,20 @@ const props = defineProps({
   comentariosCount: { type: [Number, String], default: 0 }
 })
 
+const emit = defineEmits<{
+  (e: 'deleted'): void
+}>()
+
 const token = useCookie('token')
 const authUserStr = useCookie('user')
 const config = useRuntimeConfig()
+const router = useRouter()
+
+const goToPost = () => {
+  if (props.id) {
+    router.push(`/forum/${props.id}`)
+  }
+}
 
 // Pega o ID do usuário a partir do cookie codificado em Base64
 const currentUserId = computed(() => {
@@ -66,10 +78,37 @@ const toggleLike = async (type: string) => {
     })
     
     if (res) {
+      // Remove reações anteriores do usuário (apenas no frontend) para exclusividade mútua
+      if (currentUserId.value) {
+        localLikes.value = localLikes.value.filter((l: any) => l.user?.id !== currentUserId.value)
+      }
       localLikes.value.push(res)
     }
   } catch (e) {
     console.error('Error posting like', e)
+  }
+}
+
+const showDeleteConfirm = ref(false)
+const isDeleting = ref(false)
+
+const deletePost = async () => {
+  if (isDeleting.value) return;
+  isDeleting.value = true;
+  try {
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    await $fetch(`${baseUrl}/api/posts/${props.id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    })
+    showDeleteConfirm.value = false;
+    emit('deleted');
+  } catch (e) {
+    console.error('Error deleting post', e)
+  } finally {
+    isDeleting.value = false;
   }
 }
 
@@ -90,7 +129,7 @@ const formattedDate = computed(() => {
 </script>
 
 <template>
-  <div class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200">
+  <div @click="goToPost" class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer">
     <!-- Post Header -->
     <div class="flex items-center gap-2 mb-2">
       <!-- Profile avatar or initials -->
@@ -107,7 +146,15 @@ const formattedDate = computed(() => {
         {{ sigla }}
       </div>
       <span class="text-sm font-bold text-gray-700">{{ authorName }}</span>
-      <span class="text-xs text-gray-400 ml-auto">{{ formattedDate }}</span>
+      <span class="text-xs text-gray-400" :class="{'ml-auto': !currentUserId || props.user?.id !== currentUserId}">{{ formattedDate }}</span>
+      <button 
+        v-if="currentUserId && props.user?.id === currentUserId"
+        @click.stop.prevent="showDeleteConfirm = true" 
+        class="text-gray-400 hover:text-red-500 transition-colors ml-auto"
+        title="Excluir Post"
+      >
+        <Trash2 class="w-4 h-4" />
+      </button>
     </div>
 
     <!-- Post Title -->
@@ -184,6 +231,20 @@ const formattedDate = computed(() => {
         <MessageCircle class="w-5 h-5" />
         <span>{{ comentariosCount }}</span>
       </button>
+    </div>
+
+    <!-- Modal Confirmação -->
+    <div v-if="showDeleteConfirm" @click.stop class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+      <div class="bg-white rounded-xl p-5 w-full max-w-sm shadow-xl">
+        <h3 class="text-lg font-bold text-gray-800 mb-2">Excluir Post</h3>
+        <p class="text-sm text-gray-600 mb-5">Tem certeza que deseja excluir esta publicação? Esta ação não pode ser desfeita.</p>
+        <div class="flex gap-3 justify-end">
+          <button @click.stop.prevent="showDeleteConfirm = false" class="px-4 py-2 text-sm text-gray-600 font-semibold hover:bg-gray-100 rounded-lg transition-colors" :disabled="isDeleting">Cancelar</button>
+          <button @click.stop.prevent="deletePost" class="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg disabled:opacity-50 transition-colors" :disabled="isDeleting">
+            {{ isDeleting ? 'Excluindo...' : 'Excluir' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

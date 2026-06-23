@@ -76,6 +76,8 @@ const handlePostCreated = () => {
             :likes="post.likes"
             :media="post.media"
             :createdAt="post.createdAt"
+            :comentariosCount="post.comments?.length || post._count?.comments || post.commentsCount || post.comentariosCount || 0"
+            @deleted="fetchPosts"
           />
         </NuxtLink>
       </div>
