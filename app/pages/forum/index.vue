@@ -76,13 +76,12 @@ const handlePostCreated = () => {
             :likes="post.likes"
             :media="post.media"
             :createdAt="post.createdAt"
-            :comentariosCount="post.comments?.length || post._count?.comments || post.commentsCount || post.comentariosCount || 0"
+            :comentariosCount="post.comments?.length"
             @deleted="fetchPosts"
           />
         </NuxtLink>
       </div>
     </div>
-    <!-- Floating Action Button -->
     <button
       @click="isCreatePostOpen = true"
       class="fixed bottom-24 right-6 z-40 w-14 h-14 bg-mint text-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.2)] shadow-mint/40 hover:scale-105 active:scale-95 transition-all"

@@ -41,7 +41,7 @@ const organizedComments = computed(() => {
     if (c.parentComment?.id) {
       const parent = map.get(c.parentComment.id)
       if (parent) {
-        c.replyToName = parent.user?.displayName || parent.user?.name || parent.nome || 'Usuário'
+        c.replyToName = parent.user?.displayName
         parent.replies.push(c)
       } else {
         roots.push(c)
@@ -148,7 +148,7 @@ const handleCommentDeleted = () => {
     </div>
     <div v-else-if="post" class="flex-1 overflow-auto p-4 pb-[160px] space-y-3">
       <PostCard
-        :id="post.id || ''"
+        :id="post.id "
         :user="post.user"
         :title="post.title"
         :content="post.content"
@@ -164,10 +164,10 @@ const handleCommentDeleted = () => {
           <CommentCard
             :id="comment.id"
             :userId="comment.user?.id"
-            :nome="comment.user?.displayName || comment.user?.name || comment.nome || 'Usuário'"
-            :comentario="comment.body || comment.content || comment.comentario"
-            :date="comment.createdAt || comment.created_at || comment.date || comment.timestamp"
-            :avatar="comment.user?.picUrl || comment.user?.avatar || comment.user?.profilePicture || comment.user?.foto || comment.avatar || comment.foto"
+            :nome="comment.user?.displayName"
+            :comentario="comment.body "
+            :date="comment.createdAt "
+            :avatar="comment.user?.picUrl"
             :replyToName="comment.replyToName"
             @reply="startReply(comment)"
             @deleted="handleCommentDeleted"
@@ -185,7 +185,7 @@ const handleCommentDeleted = () => {
     <!-- Fixed Input Container -->
     <div class="fixed bottom-[61px] left-0 right-0 z-40 flex flex-col bg-white border-t border-gray-100 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
       <div v-if="replyingTo" class="px-4 py-2 flex justify-between items-center text-xs text-gray-500 bg-gray-50 border-b border-gray-100">
-        <span>Respondendo a <strong class="text-gray-700">{{ replyingTo.user?.displayName || replyingTo.user?.name || replyingTo.nome || 'Usuário' }}</strong></span>
+        <span>Respondendo a <strong class="text-gray-700">{{ replyingTo.user?.displayName }}</strong></span>
         <button @click="cancelReply" class="text-red-500 hover:underline">Cancelar</button>
       </div>
       
