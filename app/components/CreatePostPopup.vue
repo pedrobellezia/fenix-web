@@ -106,6 +106,7 @@ import { ref } from 'vue'
 
 const props = defineProps < {
     modelValue: boolean
+    isHomepage?: boolean
 } > ()
 
 const emit = defineEmits < {
@@ -176,9 +177,12 @@ const submitPost = async () => {
 
         const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
 
-        const postData = {
+        const postData: any = {
             title: post.value.title,
             content: post.value.content
+        }
+        if (props.isHomepage) {
+            postData.homepage = true
         }
 
         const formData = new FormData()
