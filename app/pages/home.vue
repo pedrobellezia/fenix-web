@@ -63,24 +63,6 @@ const handlePostCreated = () => {
         </p>
       </div>
 
-      <div class="flex justify-center gap-4">
-        <button
-          class="bg-lilac/10 border border-lilac/20 rounded-xl p-4 flex flex-col items-center gap-2 hover:bg-lilac/20 transition w-36"
-          @click="navigateTo('/forum')"
-        >
-          <MessageCircle class="w-6 h-6 text-lilac" />
-          <span class="text-xs font-bold text-lilac">Fórum</span>
-        </button>
-
-        <button
-          class="bg-green-50 border border-green-200 rounded-xl p-4 flex flex-col items-center gap-2 hover:bg-green-100 transition w-36"
-          @click="navigateTo('/professionals')"
-        >
-          <Users class="w-6 h-6 text-mint" />
-          <span class="text-xs font-bold text-mint">Profissionais</span>
-        </button>
-      </div>
-
       <div>
         <h3 class="font-bold text-gray-700 mb-2">Postagens recentes</h3>
 
