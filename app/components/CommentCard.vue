@@ -22,16 +22,18 @@ const token = useCookie('token')
 const authUserStr = useCookie('user')
 const config = useRuntimeConfig()
 
-const currentUserId = computed(() => {
+const currentUser = computed(() => {
   if (!authUserStr.value) return null;
   try {
     const decodedStr = atob(authUserStr.value as string)
-    const userObj = JSON.parse(decodedStr)
-    return userObj.id
+    return JSON.parse(decodedStr)
   } catch(e) {
     return null;
   }
 })
+
+const currentUserId = computed(() => currentUser.value?.id)
+const currentUserRole = computed(() => currentUser.value?.role)
 
 const showDeleteConfirm = ref(false)
 const isDeleting = ref(false)
@@ -112,7 +114,7 @@ const formattedDate = computed(() => {
       <span class="text-sm font-bold text-gray-700">{{ nome }}</span>
       <span class="text-xs text-gray-400" :class="{'ml-auto': !currentUserId || props.userId !== currentUserId}">{{ formattedDate }}</span>
       <button 
-        v-if="currentUserId && props.userId === currentUserId"
+        v-if="(currentUserId && props.userId === currentUserId) || currentUserRole === 'ADMIN'"
         @click.stop.prevent="showDeleteConfirm = true" 
         class="text-gray-400 hover:text-red-500 transition-colors ml-auto"
         title="Excluir Comentário"
