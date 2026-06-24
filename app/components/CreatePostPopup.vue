@@ -1,11 +1,11 @@
 <template>
-  <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+  <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Header -->
-      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Criar Novo Post</h2>
-        <button @click="close" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+        <h2 class="text-xl font-bold text-gray-800">Criar Novo Post</h2>
+        <button @click="close" class="text-gray-400 hover:text-gray-600 transition-colors bg-white rounded-full p-1 border border-gray-100 shadow-sm hover:shadow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
 
@@ -13,71 +13,73 @@
       <div class="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-5">
         <!-- Title -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Título</label>
           <input 
             v-model="post.title" 
             type="text" 
             placeholder="Digite o título do post..." 
-            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all shadow-sm"
           />
         </div>
 
         <!-- Content -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Conteúdo</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Conteúdo</label>
           <textarea 
             v-model="post.content" 
             rows="4" 
             placeholder="No que você está pensando?" 
-            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none shadow-sm"
           ></textarea>
         </div>
 
-        <!-- Media URLs (Simplified) -->
+        <!-- File Upload -->
         <div>
-          <div class="flex items-center justify-between mb-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mídias (URLs)</label>
-            <button @click="addMedia" type="button" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors">
-              + Adicionar Mídia
-            </button>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Mídias (Opcional)</label>
+          <div class="flex items-center justify-center w-full">
+            <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg class="w-8 h-8 mb-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                    </svg>
+                    <p class="mb-1 text-sm text-gray-500"><span class="font-semibold">Clique para enviar</span> ou arraste os arquivos</p>
+                    <p class="text-xs text-gray-500">Imagens ou Vídeos (PNG, JPG, MP4...)</p>
+                </div>
+                <input 
+                  id="dropzone-file" 
+                  type="file" 
+                  multiple 
+                  accept="image/*,video/*"
+                  @change="handleFileChange" 
+                  class="hidden" 
+                />
+            </label>
           </div>
           
-          <div v-if="post.media.length === 0" class="text-sm text-gray-500 dark:text-gray-400 italic mb-2">
-            Nenhuma mídia adicionada.
-          </div>
-
-          <div v-for="(media, index) in post.media" :key="index" class="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 mb-3 space-y-3 relative group">
-            <button @click="removeMedia(index)" type="button" class="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-colors opacity-0 group-hover:opacity-100">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-            </button>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div class="md:col-span-2">
-                <input v-model="media.mediaUrl" type="text" placeholder="URL da Mídia (ex: https://...)" class="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-blue-500" />
-              </div>
-              <div>
-                <select v-model="media.mediaType" class="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-blue-500">
-                  <option value="image">Imagem</option>
-                  <option value="video">Vídeo</option>
-                </select>
-              </div>
-              <div>
-                <input v-model="media.mimeType" type="text" placeholder="Mime Type (ex: image/jpeg)" class="w-full px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none focus:ring-1 focus:ring-blue-500" />
-              </div>
+          <!-- Image/Video Previews -->
+          <div v-if="files.length > 0" class="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-3">
+            <div v-for="(fileItem, index) in files" :key="index" @click="openPreview(fileItem)" class="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm aspect-square bg-black cursor-pointer hover:opacity-90 transition-opacity">
+              <img v-if="fileItem.type.startsWith('image/')" :src="fileItem.url" class="w-full h-full object-cover" />
+              <video v-else-if="fileItem.type.startsWith('video/')" :src="fileItem.url" class="w-full h-full object-cover" muted></video>
+              
+              <!-- Delete Button (Top Right) -->
+              <button @click.stop="removeFile(index)" type="button" class="absolute top-1.5 right-1.5 bg-black/60 text-white p-1.5 rounded-full hover:bg-red-500 transition-colors shadow-sm" title="Remover mídia">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Footer / Actions -->
-      <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 bg-gray-50 dark:bg-gray-800/50">
-        <button @click="close" type="button" class="px-4 py-2 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium transition-colors">
+      <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50/50">
+        <button @click="close" type="button" class="px-5 py-2.5 rounded-xl text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 font-semibold transition-colors shadow-sm">
           Cancelar
         </button>
         <button 
           @click="submitPost" 
           :disabled="isSubmitting"
-          class="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+          class="px-5 py-2.5 rounded-xl text-white bg-blue-600 hover:bg-blue-700 font-semibold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           <svg v-if="isSubmitting" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -88,19 +90,28 @@
       </div>
     </div>
   </div>
+
+  <!-- Full Size Media Preview Modal -->
+  <div v-if="previewMediaUrl" @click="closePreview" class="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm">
+    <button @click="closePreview" class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors p-2 bg-black/50 rounded-full">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    <img v-if="previewMediaType?.startsWith('image/')" :src="previewMediaUrl" class="max-w-full max-h-[90vh] object-contain rounded-lg" @click.stop />
+    <video v-else-if="previewMediaType?.startsWith('video/')" :src="previewMediaUrl" controls class="max-w-full max-h-[90vh] object-contain rounded-lg" @click.stop></video>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const props = defineProps<{
-  modelValue: boolean
-}>()
+const props = defineProps < {
+    modelValue: boolean
+} > ()
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'post-created'): void
-}>()
+const emit = defineEmits < {
+    (e: 'update:modelValue', value: boolean): void
+    (e: 'post-created'): void
+} > ()
 
 const config = useRuntimeConfig()
 const token = useCookie('token')
@@ -108,91 +119,117 @@ const token = useCookie('token')
 const isSubmitting = ref(false)
 
 const initialPostState = () => ({
-  title: '',
-  content: '',
-  mediaType: 'image', // Padrão da requisição
-  media: [] as Array<{ mediaUrl: string, mediaType: string, mimeType: string }>
+    title: '',
+    content: ''
 })
 
 const post = ref(initialPostState())
+const files = ref<{ file: File, url: string, type: string }[]>([])
 
 const close = () => {
-  emit('update:modelValue', false)
-  // Optional: reset form on close
-  // post.value = initialPostState()
+    emit('update:modelValue', false)
 }
 
-const addMedia = () => {
-  post.value.media.push({
-    mediaUrl: '',
-    mediaType: 'image',
-    mimeType: 'image/jpeg'
-  })
+const handleFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    if (target.files) {
+        const newFiles = Array.from(target.files)
+        newFiles.forEach(file => {
+            files.value.push({
+                file,
+                url: URL.createObjectURL(file),
+                type: file.type
+            })
+        })
+    }
+    target.value = ''
 }
 
-const removeMedia = (index: number) => {
-  post.value.media.splice(index, 1)
+const removeFile = (index: number) => {
+    const removed = files.value.splice(index, 1)[0]
+    if (removed) {
+        URL.revokeObjectURL(removed.url)
+    }
+}
+
+const previewMediaUrl = ref<string | null>(null)
+const previewMediaType = ref<string | null>(null)
+
+const openPreview = (fileItem: { url: string, type: string }) => {
+    previewMediaUrl.value = fileItem.url
+    previewMediaType.value = fileItem.type
+}
+
+const closePreview = () => {
+    previewMediaUrl.value = null
+    previewMediaType.value = null
 }
 
 const submitPost = async () => {
-  if (!post.value.title || !post.value.content) {
-    alert('O título e o conteúdo são obrigatórios!')
-    return
-  }
-
-  try {
-    isSubmitting.value = true
-    
-    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
-    
-    // Atualiza o root mediaType baseado na primeira mídia (se houver)
-    if (post.value.media.length > 0) {
-      post.value.mediaType = post.value.media[0].mediaType
+    if (!post.value.title || !post.value.content) {
+        alert('O título e o conteúdo são obrigatórios!')
+        return
     }
 
-    const payload: any = {
-      title: post.value.title,
-      content: post.value.content,
-      media: post.value.media
+    try {
+        isSubmitting.value = true
+
+        const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+
+        const postData = {
+            title: post.value.title,
+            content: post.value.content
+        }
+
+        const formData = new FormData()
+        formData.append(
+            "post",
+            new Blob([JSON.stringify(postData)], { type: "application/json" })
+        )
+
+        if (files.value && files.value.length > 0) {
+            for (let i = 0; i < files.value.length; i++) {
+                formData.append("files", files.value[i].file)
+            }
+        }
+
+        await $fetch(`${baseUrl}/api/posts`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token.value}`
+            },
+            body: formData
+        })
+
+        // Reset and close
+        post.value = initialPostState()
+        files.value = []
+        emit('post-created')
+        close()
+    } catch (error) {
+        console.error('Erro ao criar post:', error)
+        alert('Ocorreu um erro ao publicar o post. Verifique o console.')
+    } finally {
+        isSubmitting.value = false
     }
-
-    if (post.value.media.length > 0) {
-      payload.mediaType = post.value.media[0].mediaType
-    }
-
-    await $fetch(`${baseUrl}/api/posts`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token.value}`
-      },
-      body: payload
-    })
-
-    // Reset and close
-    post.value = initialPostState()
-    emit('post-created')
-    close()
-  } catch (error) {
-    console.error('Erro ao criar post:', error)
-    alert('Ocorreu um erro ao publicar o post. Verifique o console.')
-  } finally {
-    isSubmitting.value = false
-  }
 }
 </script>
 
 <style scoped>
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+    width: 6px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.5);
-  border-radius: 10px;
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 10px;
 }
+
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(75, 85, 99, 0.5);
+    background-color: rgba(75, 85, 99, 0.5);
 }
 </style>

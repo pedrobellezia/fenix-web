@@ -126,6 +126,26 @@ const formattedDate = computed(() => {
   const date = new Date(props.createdAt)
   return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(date)
 })
+
+const getMediaUrl = (filename: string) => {
+  if (!filename) return '';
+  if (filename.startsWith('http')) return filename; // fallback in case it's already a full URL
+  const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`;
+  return `${baseUrl}/upload/${filename}`;
+}
+
+const previewMediaUrl = ref<string | null>(null)
+const previewMediaType = ref<string | null>(null)
+
+const openPreview = (item: any) => {
+  previewMediaUrl.value = getMediaUrl(item.filename || item.mediaUrl)
+  previewMediaType.value = item.mediaType?.toLowerCase() || item.mimeType?.toLowerCase()
+}
+
+const closePreview = () => {
+  previewMediaUrl.value = null
+  previewMediaType.value = null
+}
 </script>
 
 <template>
@@ -158,30 +178,35 @@ const formattedDate = computed(() => {
     </div>
 
     <!-- Post Title -->
-    <h4 v-if="props.title || props.titulo" class="text-sm font-bold text-gray-800 mb-1">
-      {{ props.title || props.titulo }}
+    <h4 v-if="props.title " class="text-sm font-bold text-gray-800 mb-1">
+      {{ props.title }}
     </h4>
 
     <!-- Post Content -->
     <p class="text-sm text-gray-600 whitespace-pre-line">
-      {{ props.content || props.conteudo }}
+      {{ props.content }}
     </p>
 
     <!-- Post Media Attachment -->
-    <div v-if="props.media && props.media.length > 0" class="mt-3 overflow-hidden rounded-xl space-y-2">
-      <div v-for="item in props.media" :key="item.id" class="overflow-hidden rounded-xl">
+    <div v-if="props.media && props.media.length > 0" class="mt-3 grid grid-cols-4 gap-2">
+      <div v-for="item in props.media" :key="item.id" @click.stop.prevent="openPreview(item)" class="relative overflow-hidden rounded-xl aspect-square bg-black/5 cursor-pointer group">
         <img
-          v-if="item.mediaType === 'image' || item.mimeType?.startsWith('image/')"
-          :src="item.mediaUrl"
+          v-if="item.mediaType?.toLowerCase() === 'image' || item.mimeType?.toLowerCase().startsWith('image/')"
+          :src="getMediaUrl(item.filename || item.mediaUrl)"
           alt="Post media"
-          class="w-full max-h-64 object-cover hover:scale-[1.01] transition-transform duration-200 rounded-xl"
+          class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-200"
         />
         <video
-          v-else-if="item.mediaType === 'video' || item.mimeType?.startsWith('video/')"
-          :src="item.mediaUrl"
-          controls
-          class="w-full max-h-64 object-cover rounded-xl"
-        />
+          v-else-if="item.mediaType?.toLowerCase() === 'video' || item.mimeType?.toLowerCase().startsWith('video/')"
+          class="absolute inset-0 w-full h-full object-cover"
+          muted
+        >
+          <source :src="getMediaUrl(item.filename || item.mediaUrl)" :type="item.mimeType" />
+        </video>
+        <!-- Ícone de Play sobreposto para vídeos -->
+        <div v-if="item.mediaType?.toLowerCase() === 'video' || item.mimeType?.toLowerCase().startsWith('video/')" class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-80 group-hover:opacity-100 transition-opacity"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        </div>
       </div>
     </div>
 
@@ -245,6 +270,15 @@ const formattedDate = computed(() => {
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- Full Size Media Preview Modal -->
+    <div v-if="previewMediaUrl" @click.stop.prevent="closePreview" class="fixed inset-0 z-[110] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm">
+      <button @click.stop.prevent="closePreview" class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors p-2 bg-black/50 rounded-full z-50">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <img v-if="previewMediaType === 'image' || previewMediaType?.startsWith('image/')" :src="previewMediaUrl" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" @click.stop />
+      <video v-else-if="previewMediaType === 'video' || previewMediaType?.startsWith('video/')" :src="previewMediaUrl" controls autoplay class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" @click.stop></video>
     </div>
   </div>
 </template>
