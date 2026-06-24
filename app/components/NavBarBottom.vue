@@ -44,7 +44,7 @@ const isActive = (path: string) => {
       <span
         class="text-[10px]"
         :class="{ 'font-bold': isActive('/professionals') }"
-        >Saúde</span
+        >Profissionais</span
       >
     </button>
     <button
