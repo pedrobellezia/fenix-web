@@ -99,18 +99,15 @@ const handleDeleteAccount = async () => {
     id="screen-profile-edit"
     class="screen flex-col h-full bg-white relative"
   >
-    <!-- Header -->
     <NavBarTop title="Perfil" :back-arrow="true" />
 
-    <!-- Main Content -->
     <div class="flex-1 overflow-auto p-6 space-y-6 pb-24 fade-in">
-      <!-- Profile Picture -->
       <div class="flex flex-col items-center">
         <div class="relative">
           <div
             class="w-24 h-24 rounded-full bg-gradient-to-br from-lilac to-rose flex items-center justify-center text-4xl text-white font-bold shadow-lg"
           >
-            {{ name?.charAt(0).toUpperCase() || 'U' }}
+            {{ name?.charAt(0).toUpperCase()}}
           </div>
           <button
             class="absolute bottom-0 right-0 bg-mint text-white p-2 rounded-full shadow-lg hover:bg-mint-dark transition-all duration-300 hover:scale-105 active:scale-95 border-2 border-white"
@@ -123,9 +120,7 @@ const handleDeleteAccount = async () => {
         </p>
       </div>
 
-      <!-- Form -->
       <div class="space-y-4">
-        <!-- Name Input -->
         <div>
           <label
             class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5 ml-1"
@@ -143,7 +138,6 @@ const handleDeleteAccount = async () => {
           </div>
         </div>
 
-        <!-- Email Input -->
         <div>
           <label
             class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5 ml-1"

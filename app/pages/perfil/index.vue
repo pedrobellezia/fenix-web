@@ -71,13 +71,6 @@ const handleLogout = () => {
           <ChevronRight class="w-4 h-4 text-gray-400 ml-auto" />
         </button>
         <button
-          class="w-full flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
-        >
-          <Shield class="w-5 h-5 text-lilac" />
-          <span class="text-sm font-medium text-gray-700">Privacidade</span>
-          <ChevronRight class="w-4 h-4 text-gray-400 ml-auto" />
-        </button>
-        <button
           class="w-full flex items-center gap-3 p-3 bg-red-50 rounded-xl hover:bg-red-100 transition mt-4"
           @click="handleLogout"
         >
