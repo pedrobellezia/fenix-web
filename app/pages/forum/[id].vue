@@ -61,21 +61,6 @@ const organizedComments = computed(() => {
   return flat
 })
 
-const fetchComments = async () => {
-  try {
-    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
-    const response: any = await $fetch(`${baseUrl}/api/post/${postId}/comments`, {
-      headers: {
-        Authorization: `Bearer ${token.value}`
-      }
-    })
-    comments.value = Array.isArray(response) ? response : (response?.data || response?.comments || [])
-  } catch (e) {
-    console.error('Error fetching comments:', e)
-    comments.value = []
-  }
-}
-
 const submitComment = async () => {
   if (!newComment.value.trim() || isSubmitting.value) return
   
@@ -113,12 +98,13 @@ const submitComment = async () => {
 const fetchPost = async () => {
   try {
     const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
-    const response = await $fetch(`${baseUrl}/api/posts/${postId}`, {
+    const response: any = await $fetch(`${baseUrl}/api/posts/${postId}`, {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
     })
     post.value = response
+    comments.value = response.comments || []
   } catch (e) {
     console.error('Error fetching post:', e)
   } finally {
@@ -128,7 +114,6 @@ const fetchPost = async () => {
 
 onMounted(async () => {
   await fetchPost()
-  await fetchComments()
 })
 
 const handlePostDeleted = () => {
@@ -136,7 +121,7 @@ const handlePostDeleted = () => {
 }
 
 const handleCommentDeleted = () => {
-  fetchComments()
+  fetchPost()
 }
 </script>
 
