@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ArrowLeft } from 'lucide-vue-next'
+import { ArrowLeft, CheckCircle2 } from 'lucide-vue-next'
 
 const role = ref('PACIENTE')
 const name = ref('')
@@ -8,6 +8,8 @@ const displayName = ref('')
 const email = ref('')
 const password = ref('')
 const errorMsg = ref('')
+const showSuccessPopup = ref(false)
+const isLoading = ref(false)
 const mostrarSenha = ref(false)
 
 const config = useRuntimeConfig()
@@ -18,6 +20,7 @@ const selectRole = (selectedRole: string) => {
 
 const handleRegister = async () => {
   errorMsg.value = ''
+  isLoading.value = true
   try {
     const baseUrl = config.public.baseApiUrl.startsWith('http')
       ? config.public.baseApiUrl
@@ -33,10 +36,15 @@ const handleRegister = async () => {
       },
     })
 
-    navigateTo('/login')
+    showSuccessPopup.value = true
+    setTimeout(() => {
+      navigateTo('/login')
+    }, 3000)
   } catch (e) {
     console.error(e)
     errorMsg.value = 'Falha ao cadastrar. Verifique os dados e tente novamente.'
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
@@ -200,10 +208,11 @@ const handleRegister = async () => {
 
         <div class="pt-2">
           <button
-            class="mb-3 w-full rounded-xl bg-mint py-3 font-bold text-white shadow-md shadow-mint/20 transition-all hover:bg-mint-dark hover:-translate-y-0.5"
+            class="mb-3 w-full rounded-xl bg-mint py-3 font-bold text-white shadow-md shadow-mint/20 transition-all hover:bg-mint-dark hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
             @click="handleRegister"
+            :disabled="isLoading"
           >
-            Cadastrar
+            {{ isLoading ? 'Cadastrando...' : 'Cadastrar' }}
           </button>
 
           <div class="text-center">
@@ -217,6 +226,24 @@ const handleRegister = async () => {
               Fazer login
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Sucesso -->
+    <div v-if="showSuccessPopup" class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+      <div class="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl flex flex-col items-center text-center animate-in fade-in zoom-in duration-300">
+        <div class="w-16 h-16 bg-mint/20 text-mint rounded-full flex items-center justify-center mb-4">
+          <CheckCircle2 class="w-10 h-10" />
+        </div>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">Conta Criada!</h3>
+        <p class="text-slate-600 mb-4">Seu cadastro foi realizado com sucesso.</p>
+        <div class="flex items-center gap-2 text-sm text-slate-400">
+          <svg class="animate-spin h-4 w-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Redirecionando para o login...
         </div>
       </div>
     </div>
