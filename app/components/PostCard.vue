@@ -125,8 +125,33 @@ const sigla = computed(() => {
 
 const formattedDate = computed(() => {
   if (!props.createdAt) return ''
-  const date = new Date(props.createdAt)
-  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(date)
+  
+  let dateStr = props.createdAt
+  // Assume UTC se não tiver timezone (para lidar com "2026-06-25T17:58:10.091349")
+  if (!dateStr.endsWith('Z') && !dateStr.substring(10).includes('+') && !dateStr.substring(10).includes('-')) {
+    dateStr += 'Z'
+  }
+  
+  const date = new Date(dateStr)
+  const now = new Date()
+  
+  const diffMs = now.getTime() - date.getTime()
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+  
+  if (diffHours >= 0 && diffHours < 24) {
+    if (diffHours === 0) {
+      const diffMins = Math.floor(diffMs / (1000 * 60))
+      return diffMins === 0 ? 'agora' : `há ${diffMins}m`
+    }
+    return `há ${diffHours}h`
+  }
+  
+  return new Intl.DateTimeFormat('pt-BR', { 
+    timeZone: 'America/Sao_Paulo', 
+    day: '2-digit', 
+    month: '2-digit', 
+    year: '2-digit' 
+  }).format(date)
 })
 
 const getMediaUrl = (filename: string) => {
@@ -170,15 +195,17 @@ const getAvatarUrl = () => {
         class="w-8 h-8 rounded-full object-cover border border-gray-100"
       />
       <span class="text-sm font-bold text-gray-700">{{ authorName }}</span>
-      <span class="text-xs text-gray-400" :class="{'ml-auto': !currentUserId || props.user?.id !== currentUserId}">{{ formattedDate }}</span>
-      <button 
-        v-if="(currentUserId && props.user?.id === currentUserId) || currentUserRole === 'ADMIN'"
-        @click.stop.prevent="showDeleteConfirm = true" 
-        class="text-gray-400 hover:text-red-500 transition-colors ml-auto"
-        title="Excluir Post"
-      >
-        <Trash2 class="w-4 h-4" />
-      </button>
+      <div class="ml-auto flex items-center gap-3">
+        <span class="text-xs text-gray-400">{{ formattedDate }}</span>
+        <button 
+          v-if="(currentUserId && props.user?.id === currentUserId) || currentUserRole === 'ADMIN'"
+          @click.stop.prevent="showDeleteConfirm = true" 
+          class="text-gray-400 hover:text-red-500 transition-colors"
+          title="Excluir Post"
+        >
+          <Trash2 class="w-4 h-4" />
+        </button>
+      </div>
     </div>
 
     <!-- Post Title -->

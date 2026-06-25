@@ -81,18 +81,24 @@ const formattedDate = computed(() => {
   
   if (isNaN(data.getTime())) return ''
 
-  const localeStr = data.toLocaleString('pt-BR', {
+  const now = new Date()
+  const diffMs = now.getTime() - data.getTime()
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+
+  if (diffHours >= 0 && diffHours < 24) {
+    if (diffHours === 0) {
+      const diffMins = Math.floor(diffMs / (1000 * 60))
+      return diffMins === 0 ? 'agora' : `há ${diffMins}m`
+    }
+    return `há ${diffHours}h`
+  }
+
+  return new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-
-  // Normalize string to guarantee "dd/MM/yyyy, HH:mm"
-  // Some browsers output "23/06/2026 14:10", others "23/06/2026, 14:10"
-  return localeStr.replace(/,?\s+/, ', ')
+    year: '2-digit'
+  }).format(data)
 })
 
 const getAvatarUrl = () => {
@@ -114,15 +120,17 @@ const getAvatarUrl = () => {
         class="w-7 h-7 rounded-full object-cover"
       />
       <span class="text-sm font-bold text-gray-700">{{ nome }}</span>
-      <span class="text-xs text-gray-400" :class="{'ml-auto': !currentUserId || props.userId !== currentUserId}">{{ formattedDate }}</span>
-      <button 
-        v-if="(currentUserId && props.userId === currentUserId) || currentUserRole === 'ADMIN'"
-        @click.stop.prevent="showDeleteConfirm = true" 
-        class="text-gray-400 hover:text-red-500 transition-colors ml-auto"
-        title="Excluir Comentário"
-      >
-        <Trash2 class="w-3.5 h-3.5" />
-      </button>
+      <div class="ml-auto flex items-center gap-3">
+        <span class="text-xs text-gray-400">{{ formattedDate }}</span>
+        <button 
+          v-if="(currentUserId && props.userId === currentUserId) || currentUserRole === 'ADMIN'"
+          @click.stop.prevent="showDeleteConfirm = true" 
+          class="text-gray-400 hover:text-red-500 transition-colors"
+          title="Excluir Comentário"
+        >
+          <Trash2 class="w-3.5 h-3.5" />
+        </button>
+      </div>
     </div>
     <div v-if="replyToName" class="text-[11px] text-gray-400 mb-2 mt-[-4px]">
       Em resposta a <span class="text-mint font-semibold">@{{ replyToName }}</span>
