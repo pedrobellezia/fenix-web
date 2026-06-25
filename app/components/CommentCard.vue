@@ -94,23 +94,25 @@ const formattedDate = computed(() => {
   // Some browsers output "23/06/2026 14:10", others "23/06/2026, 14:10"
   return localeStr.replace(/,?\s+/, ', ')
 })
+
+const getAvatarUrl = () => {
+  if (props.avatar) {
+    if (props.avatar.startsWith('http')) return props.avatar;
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`;
+    return `${baseUrl}/upload/${props.avatar}`;
+  }
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(props.nome)}&background=random&color=fff`
+}
 </script>
 
 <template>
   <div class="bg-gray-50 border border-gray-100 rounded-lg p-3">
     <div class="flex items-center gap-2 mb-2">
       <img
-        v-if="avatar"
-        :src="avatar"
+        :src="getAvatarUrl()"
         :alt="nome"
         class="w-7 h-7 rounded-full object-cover"
       />
-      <div
-        v-else
-        class="w-7 h-7 rounded-full bg-lilac/20 flex items-center justify-center text-xs font-bold text-lilac"
-      >
-        {{ sigla }}
-      </div>
       <span class="text-sm font-bold text-gray-700">{{ nome }}</span>
       <span class="text-xs text-gray-400" :class="{'ml-auto': !currentUserId || props.userId !== currentUserId}">{{ formattedDate }}</span>
       <button 

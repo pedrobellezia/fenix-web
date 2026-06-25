@@ -148,6 +148,15 @@ const closePreview = () => {
   previewMediaUrl.value = null
   previewMediaType.value = null
 }
+
+const getAvatarUrl = () => {
+  if (props.user?.picUrl) {
+    if (props.user.picUrl.startsWith('http')) return props.user.picUrl;
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`;
+    return `${baseUrl}/upload/${props.user.picUrl}`;
+  }
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName.value)}&background=random&color=fff`
+}
 </script>
 
 <template>
@@ -156,17 +165,10 @@ const closePreview = () => {
     <div class="flex items-center gap-2 mb-2">
       <!-- Profile avatar or initials -->
       <img
-        v-if="props.user?.picUrl"
-        :src="props.user.picUrl"
+        :src="getAvatarUrl()"
         alt="Avatar"
         class="w-8 h-8 rounded-full object-cover border border-gray-100"
       />
-      <div
-        v-else
-        class="w-8 h-8 rounded-full bg-lilac/20 flex items-center justify-center text-xs font-bold text-lilac"
-      >
-        {{ sigla }}
-      </div>
       <span class="text-sm font-bold text-gray-700">{{ authorName }}</span>
       <span class="text-xs text-gray-400" :class="{'ml-auto': !currentUserId || props.user?.id !== currentUserId}">{{ formattedDate }}</span>
       <button 

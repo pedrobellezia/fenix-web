@@ -38,18 +38,28 @@ const handleLogout = () => {
   userCookie.value = null
   navigateTo('/login')
 }
+
+const getAvatarUrl = (u: any) => {
+  if (!u) return '';
+  if (u.picUrl) {
+    if (u.picUrl.startsWith('http')) return u.picUrl;
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`;
+    return `${baseUrl}/upload/${u.picUrl}`;
+  }
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'Usuário')}&background=random&color=fff&size=128`
+}
 </script>
 <template>
   <div id="screen-profile" class="screen flex-col h-full">
     <NavBarTop title="Perfil" />
     <div class="flex-1 overflow-auto p-4 fade-in">
       <div class="flex flex-col items-center mb-5">
-        <div
+        <img
           v-if="user"
-          class="w-20 h-20 rounded-full bg-gradient-to-br from-lilac to-rose flex items-center justify-center text-3xl text-white font-bold mb-2"
-        >
-          {{ user.name?.charAt(0).toUpperCase() || 'U' }}
-        </div>
+          :src="getAvatarUrl(user)"
+          alt="Avatar"
+          class="w-20 h-20 rounded-full object-cover shadow-sm border border-gray-100 mb-2"
+        />
         <h3 v-if="user" class="font-bold text-gray-800">{{ user.name || 'Usuário' }}</h3>
         <p v-if="user" class="text-sm text-gray-500 capitalize">{{ user.role || 'Paciente' }}</p>
       </div>
