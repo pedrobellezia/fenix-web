@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { Cropper, CircleStencil } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
 import {
   Camera,
   User,
@@ -8,7 +10,8 @@ import {
   Activity,
   Heart,
   CheckCircle,
-  Trash2
+  Trash2,
+  X
 } from 'lucide-vue-next'
 
 const config = useRuntimeConfig()
@@ -20,8 +23,16 @@ const displayName = ref('')
 const email = ref('')
 const treatmentPhase = ref('')
 const bio = ref('')
+const picUrl = ref('')
 
 const showSuccessToast = ref(false)
+
+// Image Cropper State
+const fileInput = ref<HTMLInputElement | null>(null)
+const cropperRef = ref<any>(null)
+const imageToCrop = ref<string | null>(null)
+const showCropperModal = ref(false)
+const isUploading = ref(false)
 
 const fetchProfile = async () => {
   if (!token.value) {
@@ -41,6 +52,7 @@ const fetchProfile = async () => {
     email.value = data.email || ''
     treatmentPhase.value = data.treatmentPhase || ''
     bio.value = data.bio || ''
+    picUrl.value = data.picUrl || ''
   } catch (e) {
     console.error(e)
   }
@@ -49,6 +61,75 @@ const fetchProfile = async () => {
 onMounted(() => {
   fetchProfile()
 })
+
+// Trigger file selection
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+// Handle file selection
+const onFileSelected = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    imageToCrop.value = e.target?.result as string
+    showCropperModal.value = true
+  }
+  reader.readAsDataURL(file)
+  
+  // Clear input so same file can be selected again
+  target.value = ''
+}
+
+// Cancel cropping
+const cancelCrop = () => {
+  showCropperModal.value = false
+  imageToCrop.value = null
+}
+
+// Confirm cropping and upload
+const confirmCrop = async () => {
+  if (!cropperRef.value) return
+  
+  const { canvas } = cropperRef.value.getResult()
+  if (!canvas) return
+
+  isUploading.value = true
+
+  canvas.toBlob(async (blob: Blob | null) => {
+    if (!blob) {
+      isUploading.value = false
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('file', blob, 'avatar.png')
+
+    try {
+      const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+      await $fetch(`${baseUrl}/me/photo`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        },
+        body: formData
+      })
+      
+      // Refresh profile to get the new picUrl
+      await fetchProfile()
+      
+      showCropperModal.value = false
+      imageToCrop.value = null
+    } catch (e) {
+      console.error('Error uploading photo:', e)
+    } finally {
+      isUploading.value = false
+    }
+  }, 'image/png')
+}
 
 const handleSave = async () => {
   try {
@@ -92,6 +173,15 @@ const handleDeleteAccount = async () => {
     console.error(e)
   }
 }
+
+const getAvatarUrl = () => {
+  if (picUrl.value) {
+    if (picUrl.value.startsWith('http')) return picUrl.value;
+    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`;
+    return `${baseUrl}/upload/${picUrl.value}`;
+  }
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name.value || 'Usuário')}&background=random&color=fff&size=128`
+}
 </script>
 
 <template>
@@ -103,18 +193,25 @@ const handleDeleteAccount = async () => {
 
     <div class="flex-1 overflow-auto p-6 space-y-6 pb-24 fade-in">
       <div class="flex flex-col items-center">
-        <div class="relative">
-          <div
-            class="w-24 h-24 rounded-full bg-gradient-to-br from-lilac to-rose flex items-center justify-center text-4xl text-white font-bold shadow-lg"
-          >
-            {{ name?.charAt(0).toUpperCase()}}
-          </div>
+        <div class="relative cursor-pointer" @click="triggerFileInput">
+          <img
+            :src="getAvatarUrl()"
+            alt="Avatar"
+            class="w-24 h-24 rounded-full object-cover shadow-lg border-2 border-white"
+          />
           <button
             class="absolute bottom-0 right-0 bg-mint text-white p-2 rounded-full shadow-lg hover:bg-mint-dark transition-all duration-300 hover:scale-105 active:scale-95 border-2 border-white"
           >
             <Camera class="w-4 h-4" />
           </button>
         </div>
+        <input 
+          type="file" 
+          ref="fileInput" 
+          accept="image/*" 
+          class="hidden" 
+          @change="onFileSelected"
+        />
         <p class="text-xs text-gray-500 mt-2 font-medium">
           Toque para alterar a foto
         </p>
@@ -249,5 +346,48 @@ const handleDeleteAccount = async () => {
         </div>
       </div>
     </transition>
+
+    <!-- Cropper Modal -->
+    <div v-if="showCropperModal" class="fixed inset-0 bg-black/90 z-[100] flex flex-col">
+      <div class="flex items-center justify-between p-4 text-white">
+        <button @click="cancelCrop" class="p-2 hover:bg-white/10 rounded-full transition-colors" :disabled="isUploading">
+          <X class="w-6 h-6" />
+        </button>
+        <h3 class="font-bold">Ajustar Foto</h3>
+        <button @click="confirmCrop" class="px-4 py-1.5 bg-mint text-white rounded-lg font-bold hover:bg-mint-dark transition-colors disabled:opacity-50" :disabled="isUploading">
+          {{ isUploading ? 'Salvando...' : 'Salvar' }}
+        </button>
+      </div>
+      
+      <div class="flex-1 flex items-center justify-center relative overflow-hidden bg-black p-4">
+        <Cropper
+          ref="cropperRef"
+          class="w-full max-h-[80vh]"
+          :src="imageToCrop"
+          :stencil-component="CircleStencil"
+          :stencil-props="{ 
+            aspectRatio: 1, 
+            movable: false, 
+            resizable: false,
+            handlers: {},
+            lines: {},
+            overlayClass: 'cropper-solid-overlay'
+          }"
+          background-class="cropper-solid-bg"
+          image-restriction="stencil"
+        />
+      </div>
+    </div>
   </div>
 </template>
+
+<style>
+.cropper-solid-overlay {
+  background-color: rgba(0, 0, 0, 1) !important;
+  opacity: 1 !important;
+}
+.cropper-solid-bg {
+  background-color: #000000 !important;
+}
+</style>
+
