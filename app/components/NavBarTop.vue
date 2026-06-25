@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Sparkles, Bell, User, ArrowLeft } from 'lucide-vue-next'
+import { Bell, User, ArrowLeft } from 'lucide-vue-next'
 
 defineProps({
   title: {
@@ -32,11 +32,6 @@ function goBack() {
         <ArrowLeft class="w-6 h-6 text-white" />
       </button>
 
-      <Sparkles
-        v-else
-        class="w-6 h-6 text-white"
-        @click="navigateTo('/home')"
-      />
 
       <h2 class="text-white font-bold text-lg">{{ title }}</h2>
     </div>
