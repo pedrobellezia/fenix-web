@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ref, onMounted } from 'vue'
 import { Cropper, CircleStencil } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
@@ -11,7 +12,7 @@ import {
   Heart,
   CheckCircle,
   Trash2,
-  X
+  X,
 } from 'lucide-vue-next'
 
 const config = useRuntimeConfig()
@@ -33,6 +34,7 @@ const cropperRef = ref<any>(null)
 const imageToCrop = ref<string | null>(null)
 const showCropperModal = ref(false)
 const isUploading = ref(false)
+const showAvatarMenu = ref(false)
 
 const fetchProfile = async () => {
   if (!token.value) {
@@ -40,11 +42,13 @@ const fetchProfile = async () => {
     return
   }
   try {
-    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    const baseUrl = config.public.baseApiUrl.startsWith('http')
+      ? config.public.baseApiUrl
+      : `http://${config.public.baseApiUrl}`
     const data: any = await $fetch(`${baseUrl}/me`, {
       headers: {
-        Authorization: `Bearer ${token.value}`
-      }
+        Authorization: `Bearer ${token.value}`,
+      },
     })
     userData.value = data
     name.value = data.name || ''
@@ -79,7 +83,7 @@ const onFileSelected = (event: Event) => {
     showCropperModal.value = true
   }
   reader.readAsDataURL(file)
-  
+
   // Clear input so same file can be selected again
   target.value = ''
 }
@@ -93,7 +97,7 @@ const cancelCrop = () => {
 // Confirm cropping and upload
 const confirmCrop = async () => {
   if (!cropperRef.value) return
-  
+
   const { canvas } = cropperRef.value.getResult()
   if (!canvas) return
 
@@ -109,18 +113,20 @@ const confirmCrop = async () => {
     formData.append('file', blob, 'avatar.png')
 
     try {
-      const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+      const baseUrl = config.public.baseApiUrl.startsWith('http')
+        ? config.public.baseApiUrl
+        : `http://${config.public.baseApiUrl}`
       await $fetch(`${baseUrl}/me/photo`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token.value}`
+          Authorization: `Bearer ${token.value}`,
         },
-        body: formData
+        body: formData,
       })
-      
+
       // Refresh profile to get the new picUrl
       await fetchProfile()
-      
+
       showCropperModal.value = false
       imageToCrop.value = null
     } catch (e) {
@@ -133,11 +139,13 @@ const confirmCrop = async () => {
 
 const handleSave = async () => {
   try {
-    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    const baseUrl = config.public.baseApiUrl.startsWith('http')
+      ? config.public.baseApiUrl
+      : `http://${config.public.baseApiUrl}`
     await $fetch(`${baseUrl}/me`, {
       method: 'PATCH',
       headers: {
-        Authorization: `Bearer ${token.value}`
+        Authorization: `Bearer ${token.value}`,
       },
       body: {
         ...userData.value,
@@ -145,8 +153,9 @@ const handleSave = async () => {
         displayName: displayName.value,
         email: email.value,
         treatmentPhase: treatmentPhase.value,
-        bio: bio.value
-      }
+        bio: bio.value,
+        picUrl: picUrl.value,
+      },
     })
     showSuccessToast.value = true
     setTimeout(() => {
@@ -158,14 +167,21 @@ const handleSave = async () => {
 }
 
 const handleDeleteAccount = async () => {
-  if (!confirm('Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita.')) return
+  if (
+    !confirm(
+      'Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita.',
+    )
+  )
+    return
   try {
-    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    const baseUrl = config.public.baseApiUrl.startsWith('http')
+      ? config.public.baseApiUrl
+      : `http://${config.public.baseApiUrl}`
     await $fetch(`${baseUrl}/me`, {
       method: 'DELETE',
       headers: {
-        Authorization: `Bearer ${token.value}`
-      }
+        Authorization: `Bearer ${token.value}`,
+      },
     })
     token.value = null
     navigateTo('/login')
@@ -176,11 +192,24 @@ const handleDeleteAccount = async () => {
 
 const getAvatarUrl = () => {
   if (picUrl.value) {
-    if (picUrl.value.startsWith('http')) return picUrl.value;
-    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`;
-    return `${baseUrl}/upload/${picUrl.value}`;
+    if (picUrl.value.startsWith('http')) return picUrl.value
+    const baseUrl = config.public.baseApiUrl.startsWith('http')
+      ? config.public.baseApiUrl
+      : `http://${config.public.baseApiUrl}`
+    return `${baseUrl}/upload/${picUrl.value}`
   }
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name.value || 'Usuário')}&background=random&color=fff&size=128`
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name.value || 'Usuário')}&background=9B72CF&color=fff&size=128`
+}
+
+const selectNewPhoto = () => {
+  showAvatarMenu.value = false
+  triggerFileInput()
+}
+
+const removePhoto = () => {
+  showAvatarMenu.value = false
+  picUrl.value = ''
+  handleSave()
 }
 </script>
 
@@ -193,7 +222,7 @@ const getAvatarUrl = () => {
 
     <div class="flex-1 overflow-auto p-6 space-y-6 pb-24 fade-in">
       <div class="flex flex-col items-center">
-        <div class="relative cursor-pointer" @click="triggerFileInput">
+        <div class="relative cursor-pointer" @click="showAvatarMenu = true">
           <img
             :src="getAvatarUrl()"
             alt="Avatar"
@@ -205,11 +234,11 @@ const getAvatarUrl = () => {
             <Camera class="w-4 h-4" />
           </button>
         </div>
-        <input 
-          type="file" 
-          ref="fileInput" 
-          accept="image/*" 
-          class="hidden" 
+        <input
+          ref="fileInput"
+          type="file"
+          accept="image/*"
+          class="hidden"
           @change="onFileSelected"
         />
         <p class="text-xs text-gray-500 mt-2 font-medium">
@@ -231,7 +260,7 @@ const getAvatarUrl = () => {
               type="text"
               placeholder="Seu nome completo"
               class="w-full pl-12 pr-4 py-3 rounded-xl border border-rose-dark/20 bg-rose-light/20 focus:border-lilac focus:bg-white focus:outline-none focus:ring-2 focus:ring-lilac/25 transition-all text-sm text-gray-700 font-medium"
-            >
+            />
           </div>
         </div>
 
@@ -248,7 +277,7 @@ const getAvatarUrl = () => {
               type="email"
               placeholder="seu.email@exemplo.com"
               class="w-full pl-12 pr-4 py-3 rounded-xl border border-rose-dark/20 bg-rose-light/20 focus:border-lilac focus:bg-white focus:outline-none focus:ring-2 focus:ring-lilac/25 transition-all text-sm text-gray-700 font-medium"
-            >
+            />
           </div>
         </div>
 
@@ -266,7 +295,7 @@ const getAvatarUrl = () => {
               type="text"
               placeholder="Como quer ser chamado"
               class="w-full pl-12 pr-4 py-3 rounded-xl border border-rose-dark/20 bg-rose-light/20 focus:border-lilac focus:bg-white focus:outline-none focus:ring-2 focus:ring-lilac/25 transition-all text-sm text-gray-700 font-medium"
-            >
+            />
           </div>
         </div>
 
@@ -282,9 +311,9 @@ const getAvatarUrl = () => {
             <input
               v-model="treatmentPhase"
               type="text"
-              placeholder="Ex: Fase Inicial, Manutenção..."
+              placeholder="Ex: Fase Inicial"
               class="w-full pl-12 pr-4 py-3 rounded-xl border border-rose-dark/20 bg-rose-light/20 focus:border-lilac focus:bg-white focus:outline-none focus:ring-2 focus:ring-lilac/25 transition-all text-sm text-gray-700 font-medium"
-            >
+            />
           </div>
         </div>
 
@@ -348,34 +377,68 @@ const getAvatarUrl = () => {
     </transition>
 
     <!-- Cropper Modal -->
-    <div v-if="showCropperModal" class="fixed inset-0 bg-black/90 z-[100] flex flex-col">
+    <div
+      v-if="showCropperModal"
+      class="fixed inset-0 bg-black/90 z-[100] flex flex-col"
+    >
       <div class="flex items-center justify-between p-4 text-white">
-        <button @click="cancelCrop" class="p-2 hover:bg-white/10 rounded-full transition-colors" :disabled="isUploading">
+        <button
+          class="p-2 hover:bg-white/10 rounded-full transition-colors"
+          :disabled="isUploading"
+          @click="cancelCrop"
+        >
           <X class="w-6 h-6" />
         </button>
         <h3 class="font-bold">Ajustar Foto</h3>
-        <button @click="confirmCrop" class="px-4 py-1.5 bg-mint text-white rounded-lg font-bold hover:bg-mint-dark transition-colors disabled:opacity-50" :disabled="isUploading">
+        <button
+          class="px-4 py-1.5 bg-mint text-white rounded-lg font-bold hover:bg-mint-dark transition-colors disabled:opacity-50"
+          :disabled="isUploading"
+          @click="confirmCrop"
+        >
           {{ isUploading ? 'Salvando...' : 'Salvar' }}
         </button>
       </div>
-      
-      <div class="flex-1 flex items-center justify-center relative overflow-hidden bg-black p-4">
+
+      <div
+        class="flex-1 flex items-center justify-center relative overflow-hidden bg-black p-4"
+      >
         <Cropper
           ref="cropperRef"
           class="w-full max-h-[80vh]"
           :src="imageToCrop"
           :stencil-component="CircleStencil"
-          :stencil-props="{ 
-            aspectRatio: 1, 
-            movable: false, 
+          :stencil-props="{
+            aspectRatio: 1,
+            movable: false,
             resizable: false,
             handlers: {},
             lines: {},
-            overlayClass: 'cropper-solid-overlay'
+            overlayClass: 'cropper-solid-overlay',
           }"
           background-class="cropper-solid-bg"
           image-restriction="stencil"
         />
+      </div>
+    </div>
+
+    <!-- Avatar Menu Modal -->
+    <div v-if="showAvatarMenu" class="fixed inset-0 bg-black/50 z-[100] flex flex-col justify-end" @click="showAvatarMenu = false">
+      <div class="bg-white rounded-t-2xl p-4 shadow-xl" @click.stop>
+        <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+        <h3 class="font-bold text-gray-800 text-center mb-4">Foto de Perfil</h3>
+        <div class="space-y-2">
+          <button class="w-full flex items-center gap-3 p-3 text-gray-700 hover:bg-gray-50 rounded-xl transition-colors font-semibold" @click="selectNewPhoto">
+            <Camera class="w-5 h-5 text-mint" />
+            Escolher nova foto
+          </button>
+          <button class="w-full flex items-center gap-3 p-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors font-semibold" @click="removePhoto">
+            <Trash2 class="w-5 h-5" />
+            Excluir foto atual
+          </button>
+          <button class="w-full flex items-center justify-center p-3 text-gray-500 hover:bg-gray-50 rounded-xl transition-colors font-semibold mt-2" @click="showAvatarMenu = false">
+            Cancelar
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -390,4 +453,3 @@ const getAvatarUrl = () => {
   background-color: #000000 !important;
 }
 </style>
-
