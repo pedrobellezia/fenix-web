@@ -123,7 +123,7 @@ const getAvatarUrl = () => {
         <span class="text-xs text-gray-400">{{ formattedDate }}</span>
         <button 
           v-if="(currentUserId && props.userId === currentUserId) || currentUserRole === 'ADMIN'"
-          class="text-gray-400 hover:text-red-500 transition-colors" 
+          class="p-2 -m-2 text-gray-400 hover:text-red-500 transition-colors" 
           title="Excluir Comentário"
           @click.stop.prevent="showDeleteConfirm = true"
         >
