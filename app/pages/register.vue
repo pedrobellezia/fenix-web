@@ -14,7 +14,7 @@ const mostrarSenha = ref(false)
 
 const config = useRuntimeConfig()
 
-const selectRole = (selectedRole: string) => {
+const _selectRole = (selectedRole: string) => {
   role.value = selectedRole
 }
 
@@ -73,7 +73,7 @@ const handleRegister = async () => {
             src="~/assets/images/logo-fenix.png"
             alt="Logo Fênix"
             class="h-24 w-24 object-contain drop-shadow-md"
-          />
+          >
         </div>
 
         <h1 class="mb-1 text-3xl font-bold text-slate-700">
@@ -100,7 +100,7 @@ const handleRegister = async () => {
             type="text"
             placeholder="Seu nome"
             class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lilac/50 transition-all"
-          />
+          >
         </div>
 
         <!-- Nome de exibição -->
@@ -117,7 +117,7 @@ const handleRegister = async () => {
             type="text"
             placeholder="Como quer ser chamado?"
             class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lilac/50 transition-all"
-          />
+          >
         </div>
 
         <!-- E-mail -->
@@ -134,7 +134,7 @@ const handleRegister = async () => {
             type="email"
             placeholder="seu@email.com"
             class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lilac/50 transition-all"
-          />
+          >
         </div>
 
         <!-- Senha -->
@@ -152,12 +152,12 @@ const handleRegister = async () => {
               :type="mostrarSenha ? 'text' : 'password'"
               placeholder="••••••••"
               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lilac/50 transition-all [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
-            />
+            >
             <!-- Botão do Olhinho Customizado -->
             <button
               type="button"
-              @click="mostrarSenha = !mostrarSenha"
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-lilac transition-colors"
+              @click="mostrarSenha = !mostrarSenha"
             >
               <svg
                 v-if="!mostrarSenha"
@@ -209,8 +209,8 @@ const handleRegister = async () => {
         <div class="pt-2">
           <button
             class="mb-3 w-full rounded-xl bg-mint py-3 font-bold text-white shadow-md shadow-mint/20 transition-all hover:bg-mint-dark hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
-            @click="handleRegister"
             :disabled="isLoading"
+            @click="handleRegister"
           >
             {{ isLoading ? 'Cadastrando...' : 'Cadastrar' }}
           </button>
@@ -240,8 +240,8 @@ const handleRegister = async () => {
         <p class="text-slate-600 mb-4">Seu cadastro foi realizado com sucesso.</p>
         <div class="flex items-center gap-2 text-sm text-slate-400">
           <svg class="animate-spin h-4 w-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
           </svg>
           Redirecionando para o login...
         </div>

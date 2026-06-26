@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCookie, useRuntimeConfig } from '#app'
@@ -139,8 +140,8 @@ const handleCommentDeleted = () => {
         :content="post.content"
         :likes="post.likes"
         :media="post.media"
-        :createdAt="post.createdAt"
-        :comentariosCount="comments.length"
+        :created-at="post.createdAt"
+        :comentarios-count="comments.length"
         @deleted="handlePostDeleted"
       />
       <div class="text-sm font-bold text-gray-700 mt-4">Comentários</div>
@@ -148,12 +149,12 @@ const handleCommentDeleted = () => {
         <div v-for="comment in organizedComments" :key="comment.id" :class="{'ml-8 border-l-2 border-gray-100 pl-3': comment.depth > 0}">
           <CommentCard
             :id="comment.id"
-            :userId="comment.user?.id"
+            :user-id="comment.user?.id"
             :nome="comment.user?.displayName"
             :comentario="comment.body "
             :date="comment.createdAt "
             :avatar="comment.user?.picUrl"
-            :replyToName="comment.replyToName"
+            :reply-to-name="comment.replyToName"
             @reply="startReply(comment)"
             @deleted="handleCommentDeleted"
           />
@@ -171,22 +172,22 @@ const handleCommentDeleted = () => {
     <div class="fixed bottom-[61px] left-0 right-0 z-40 flex flex-col bg-white border-t border-gray-100 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
       <div v-if="replyingTo" class="px-4 py-2 flex justify-between items-center text-xs text-gray-500 bg-gray-50 border-b border-gray-100">
         <span>Respondendo a <strong class="text-gray-700">{{ replyingTo.user?.displayName }}</strong></span>
-        <button @click="cancelReply" class="text-red-500 hover:underline">Cancelar</button>
+        <button class="text-red-500 hover:underline" @click="cancelReply">Cancelar</button>
       </div>
       
       <div class="p-4 flex items-center gap-2">
         <input
           v-model="newComment"
-          @keyup.enter="submitComment"
           type="text"
           placeholder="Adicione um comentário..."
           class="flex-1 p-2 border border-gray-200 rounded-lg"
           :disabled="isSubmitting"
+          @keyup.enter="submitComment"
         >
         <button 
-          @click="submitComment" 
-          class="p-2 bg-mint text-white rounded-lg disabled:opacity-50"
+          class="p-2 bg-mint text-white rounded-lg disabled:opacity-50" 
           :disabled="isSubmitting"
+          @click="submitComment"
         >
           <Send class="w-5 h-5" />
         </button>

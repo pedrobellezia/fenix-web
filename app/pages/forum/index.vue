@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import type { Post } from '~/types'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import PostCard from '~/components/PostCard.vue'
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
@@ -75,16 +75,16 @@ const handlePostCreated = () => {
             :content="post.content"
             :likes="post.likes"
             :media="post.media"
-            :createdAt="post.createdAt"
-            :comentariosCount="post._count?.comments || post.comments?.length || 0"
+            :created-at="post.createdAt"
+            :comentarios-count="post._count?.comments || post.comments?.length || 0"
             @deleted="fetchPosts"
           />
         </NuxtLink>
       </div>
     </div>
     <button
-      @click="isCreatePostOpen = true"
       class="fixed bottom-24 right-6 z-40 w-14 h-14 bg-mint text-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.2)] shadow-mint/40 hover:scale-105 active:scale-95 transition-all"
+      @click="isCreatePostOpen = true"
     >
       <Plus class="w-6 h-6" />
     </button>

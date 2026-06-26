@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ref } from 'vue'
 
 const email = ref('')
@@ -35,8 +36,8 @@ const handleLogin = async () => {
     userCookie.value = btoa(JSON.stringify(userData))
     
     navigateTo('/home')
-  } catch (e) {
-    console.error(e)
+  } catch (_e) {
+    console.error(_e)
     errorMsg.value = 'Falha no login. Verifique suas credenciais.'
   }
 }

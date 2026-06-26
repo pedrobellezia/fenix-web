@@ -12,15 +12,15 @@
 
             <div class="flex items-center gap-3 sm:gap-4">
                 
-                <button @click="toggleTheme" class="p-2 rounded-lg bg-gray-200 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#575991]">
-                    <svg v-if="!isDark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                    <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                <button class="p-2 rounded-lg bg-gray-200 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#575991]" @click="toggleTheme">
+                    <svg v-if="!isDark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
+                    <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
                 </button>
 
-                <button @click="navigateToLogin" class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-[#575991] dark:hover:text-white transition-colors">
+                <button class="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-[#575991] dark:hover:text-white transition-colors" @click="navigateToLogin">
                     Entrar
                 </button>
-                <button @click="navigateToRegister" class="rounded-xl bg-[#575991] px-4 py-2 sm:px-5 sm:py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-[#4a4b7a] dark:hover:bg-indigo-500 hover:-translate-y-0.5 whitespace-nowrap">
+                <button class="rounded-xl bg-[#575991] px-4 py-2 sm:px-5 sm:py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-[#4a4b7a] dark:hover:bg-indigo-500 hover:-translate-y-0.5 whitespace-nowrap" @click="navigateToRegister">
                     Criar Conta
                 </button>
             </div>
@@ -28,7 +28,7 @@
     </nav>
 
     <header class="relative bg-[#575991] dark:bg-slate-950 px-6 py-20 sm:py-32 overflow-hidden shadow-md transition-colors duration-300">
-        <div class="absolute inset-0 opacity-10 dark:opacity-20" style="background: radial-gradient(circle at center, #EAE8ED, transparent);"></div>
+        <div class="absolute inset-0 opacity-10 dark:opacity-20" style="background: radial-gradient(circle at center, #EAE8ED, transparent);"/>
         
         <div class="relative mx-auto max-w-3xl text-center">
             <h1 class="mb-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl drop-shadow-sm">
@@ -37,7 +37,7 @@
             <p class="mb-10 text-base sm:text-lg md:text-xl leading-relaxed text-[#EAE9F0] dark:text-slate-400">
                 Uma rede de apoio segura e acolhedora. Conecte-se com pessoas que entendem a sua jornada, compartilhe suas conquistas e encontre conforto em uma comunidade feita para cuidar de você.
             </p>
-            <button @click="navigateToRegister" class="rounded-xl bg-[#71CFA0] dark:bg-[#5cb88a] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-bold text-white shadow-lg shadow-[#71CFA0]/20 dark:shadow-none transition-all hover:bg-[#5dbb8c] hover:-translate-y-1 hover:shadow-xl">
+            <button class="rounded-xl bg-[#71CFA0] dark:bg-[#5cb88a] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-bold text-white shadow-lg shadow-[#71CFA0]/20 dark:shadow-none transition-all hover:bg-[#5dbb8c] hover:-translate-y-1 hover:shadow-xl" @click="navigateToRegister">
                 Começar Gratuitamente
             </button>
         </div>
@@ -101,7 +101,7 @@
                         <li class="flex gap-3"><span class="text-[#71CFA0] font-bold">✓</span> Upload de mídias</li>
                         <li class="flex gap-3"><span class="text-[#71CFA0] font-bold">✓</span> Interação na comunidade</li>
                     </ul>
-                    <button @click="navigateToRegister" class="mt-8 w-full rounded-xl bg-[#EAE8ED] dark:bg-slate-800 border border-gray-300 dark:border-slate-700 px-4 py-2.5 font-bold text-slate-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">Cadastrar</button>
+                    <button class="mt-8 w-full rounded-xl bg-[#EAE8ED] dark:bg-slate-800 border border-gray-300 dark:border-slate-700 px-4 py-2.5 font-bold text-slate-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors" @click="navigateToRegister">Cadastrar</button>
                 </div>
 
                 <div class="relative rounded-3xl border-2 border-[#575991] dark:border-indigo-500 bg-[#F2F1F6] dark:bg-slate-900 p-8 shadow-lg">

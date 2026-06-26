@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ref } from 'vue'
 
 const email = ref('')
@@ -63,7 +64,7 @@ const handleLogin = async () => {
             src="~/assets/images/logo-fenix.png"
             alt="Logo Fênix"
             class="h-24 w-24 object-contain drop-shadow-md"
-          />
+          >
         </div>
 
         <h1 id="app-title" class="mb-1 text-3xl font-bold text-slate-700">
@@ -90,7 +91,7 @@ const handleLogin = async () => {
             type="email"
             placeholder="seu@email.com"
             class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lilac/50 transition-all"
-          />
+          >
         </div>
 
         <!-- Senha -->
@@ -108,12 +109,12 @@ const handleLogin = async () => {
               :type="mostrarSenha ? 'text' : 'password'"
               placeholder="••••••••"
               class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lilac/50 transition-all [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
-            />
+            >
             <!-- Botão do Olhinho Customizado -->
             <button
               type="button"
-              @click="mostrarSenha = !mostrarSenha"
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-lilac transition-colors"
+              @click="mostrarSenha = !mostrarSenha"
             >
               <svg
                 v-if="!mostrarSenha"

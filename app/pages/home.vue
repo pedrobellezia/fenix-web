@@ -1,10 +1,11 @@
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ref, onMounted, computed } from 'vue'
 import PostCard from '~/components/PostCard.vue'
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
 import CreatePostPopup from '~/components/CreatePostPopup.vue'
-import { Quote, MessageCircle, Users, Plus } from 'lucide-vue-next'
+import { Quote, Plus } from 'lucide-vue-next'
 
 const posts = ref<any[]>([])
 const config = useRuntimeConfig()
@@ -13,23 +14,25 @@ const authUserStr = useCookie('user')
 const isCreatePostOpen = ref(false)
 
 const currentUserRole = computed(() => {
-  if (!authUserStr.value) return null;
+  if (!authUserStr.value) return null
   try {
     const decodedStr = atob(authUserStr.value as string)
     const userObj = JSON.parse(decodedStr)
     return userObj.role
-  } catch(e) {
-    return null;
+  } catch {
+    return null
   }
 })
 
 const fetchPosts = async () => {
   try {
-    const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`
+    const baseUrl = config.public.baseApiUrl.startsWith('http')
+      ? config.public.baseApiUrl
+      : `http://${config.public.baseApiUrl}`
     const response = await $fetch(`${baseUrl}/api/posts?homepage=true`, {
       headers: {
-        Authorization: `Bearer ${token.value}`
-      }
+        Authorization: `Bearer ${token.value}`,
+      },
     })
     posts.value = response as any[]
   } catch (e) {
@@ -64,20 +67,22 @@ const handlePostCreated = () => {
       </div>
 
       <div>
-        <h3 class="font-bold text-gray-700 mb-2">Postagens recentes</h3>
+        <h3 class="font-bold text-gray-700 mb-2">Comunicados Oficiais</h3>
 
         <div class="space-y-2">
           <PostCard
             v-for="post in posts"
-            :key="post.id"
             :id="post.id"
+            :key="post.id"
             :user="post.user"
             :title="post.title"
             :content="post.content"
             :likes="post.likes"
             :media="post.media"
-            :createdAt="post.createdAt"
-            :comentariosCount="post._count?.comments || post.comments?.length || 0"
+            :created-at="post.createdAt"
+            :comentarios-count="
+              post._count?.comments || post.comments?.length || 0
+            "
             @deleted="fetchPosts"
           />
         </div>
@@ -86,16 +91,16 @@ const handlePostCreated = () => {
 
     <button
       v-if="currentUserRole === 'ADMIN'"
-      @click="isCreatePostOpen = true"
       class="fixed bottom-24 right-6 z-40 w-14 h-14 bg-mint text-white rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.2)] shadow-mint/40 hover:scale-105 active:scale-95 transition-all"
+      @click="isCreatePostOpen = true"
     >
       <Plus class="w-6 h-6" />
     </button>
-    
-    <CreatePostPopup 
-      v-model="isCreatePostOpen" 
-      :isHomepage="true"
-      @post-created="handlePostCreated" 
+
+    <CreatePostPopup
+      v-model="isCreatePostOpen"
+      :is-homepage="true"
+      @post-created="handlePostCreated"
     />
 
     <NavBarBottom />

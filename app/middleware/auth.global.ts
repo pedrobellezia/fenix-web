@@ -1,4 +1,4 @@
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware((to, _from) => {
   // Pega o token e o usuário armazenado nos cookies
   const token = useCookie('token')
   const user = useCookie('user')
