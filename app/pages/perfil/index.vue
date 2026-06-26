@@ -1,7 +1,8 @@
 <script setup lang="ts">
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import NavBarTop from '~/components/NavBarTop.vue'
 import NavBarBottom from '~/components/NavBarBottom.vue'
-import { Edit, ChevronRight, Bell, Shield, LogOut } from 'lucide-vue-next'
+import { Edit, ChevronRight, Bell, LogOut } from 'lucide-vue-next'
 import { ref, onMounted } from 'vue'
 
 const config = useRuntimeConfig()
@@ -46,7 +47,7 @@ const getAvatarUrl = (u: any) => {
     const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`;
     return `${baseUrl}/upload/${u.picUrl}`;
   }
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'Usuário')}&background=random&color=fff&size=128`
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || 'Usuário')}&background=9B72CF&color=fff&size=128`
 }
 </script>
 <template>
@@ -59,7 +60,7 @@ const getAvatarUrl = (u: any) => {
           :src="getAvatarUrl(user)"
           alt="Avatar"
           class="w-20 h-20 rounded-full object-cover shadow-sm border border-gray-100 mb-2"
-        />
+        >
         <h3 v-if="user" class="font-bold text-gray-800">{{ user.name || 'Usuário' }}</h3>
         <p v-if="user" class="text-sm text-gray-500 capitalize">{{ user.role || 'Paciente' }}</p>
       </div>

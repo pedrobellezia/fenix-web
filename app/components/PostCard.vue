@@ -38,7 +38,7 @@ const currentUser = computed(() => {
   try {
     const decodedStr = atob(authUserStr.value as string)
     return JSON.parse(decodedStr)
-  } catch(e) {
+  } catch {
     return null;
   }
 })
@@ -52,13 +52,13 @@ watch(() => props.likes, (newLikes) => {
   localLikes.value = [...(newLikes || [])]
 }, { deep: true })
 
-const heartCount = computed(() => localLikes.value.filter((l: any) => l.reactionType === 'heart').length)
-const handheartCount = computed(() => localLikes.value.filter((l: any) => l.reactionType === 'handheart').length)
-const armflexCount = computed(() => localLikes.value.filter((l: any) => l.reactionType === 'armflex').length)
+const heartCount = computed(() => localLikes.value.filter((l: { reactionType?: string }) => l.reactionType === 'heart').length)
+const handheartCount = computed(() => localLikes.value.filter((l: { reactionType?: string }) => l.reactionType === 'handheart').length)
+const armflexCount = computed(() => localLikes.value.filter((l: { reactionType?: string }) => l.reactionType === 'armflex').length)
 
 const hasReacted = (type: string) => {
   if (!currentUserId.value) return false;
-  return localLikes.value.some((l: any) => l.reactionType === type && l.user?.id === currentUserId.value)
+  return localLikes.value.some((l: { reactionType?: string; user?: { id?: string } }) => l.reactionType === type && l.user?.id === currentUserId.value)
 }
 
 const toggleLike = async (type: string) => {
@@ -82,7 +82,7 @@ const toggleLike = async (type: string) => {
     if (res) {
       // Remove reações anteriores do usuário (apenas no frontend) para exclusividade mútua
       if (currentUserId.value) {
-        localLikes.value = localLikes.value.filter((l: any) => l.user?.id !== currentUserId.value)
+        localLikes.value = localLikes.value.filter((l: { user?: { id?: string } }) => l.user?.id !== currentUserId.value)
       }
       localLikes.value.push(res)
     }
@@ -116,7 +116,7 @@ const deletePost = async () => {
 
 const authorName = computed(() => props.user?.name || 'Usuário')
 
-const sigla = computed(() => {
+const _sigla = computed(() => {
   if (props.user?.name) {
     return props.user.name.substring(0, 2).toUpperCase()
   }
@@ -164,8 +164,8 @@ const getMediaUrl = (filename: string) => {
 const previewMediaUrl = ref<string | null>(null)
 const previewMediaType = ref<string | null>(null)
 
-const openPreview = (item: any) => {
-  previewMediaUrl.value = getMediaUrl(item.filename || item.mediaUrl)
+const openPreview = (item: { filename?: string; mediaUrl?: string; mediaType?: string; mimeType?: string }) => {
+  previewMediaUrl.value = getMediaUrl(item.filename || item.mediaUrl || '')
   previewMediaType.value = item.mediaType?.toLowerCase() || item.mimeType?.toLowerCase()
 }
 
@@ -180,12 +180,12 @@ const getAvatarUrl = () => {
     const baseUrl = config.public.baseApiUrl.startsWith('http') ? config.public.baseApiUrl : `http://${config.public.baseApiUrl}`;
     return `${baseUrl}/upload/${props.user.picUrl}`;
   }
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName.value)}&background=random&color=fff`
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName.value)}&background=9B72CF&color=fff`
 }
 </script>
 
 <template>
-  <div @click="goToPost" class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer">
+  <div class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer" @click="goToPost">
     <!-- Post Header -->
     <div class="flex items-center gap-2 mb-2">
       <!-- Profile avatar or initials -->
@@ -193,15 +193,15 @@ const getAvatarUrl = () => {
         :src="getAvatarUrl()"
         alt="Avatar"
         class="w-8 h-8 rounded-full object-cover border border-gray-100"
-      />
+      >
       <span class="text-sm font-bold text-gray-700">{{ authorName }}</span>
       <div class="ml-auto flex items-center gap-3">
         <span class="text-xs text-gray-400">{{ formattedDate }}</span>
         <button 
           v-if="(currentUserId && props.user?.id === currentUserId) || currentUserRole === 'ADMIN'"
-          @click.stop.prevent="showDeleteConfirm = true" 
-          class="text-gray-400 hover:text-red-500 transition-colors"
+          class="text-gray-400 hover:text-red-500 transition-colors" 
           title="Excluir Post"
+          @click.stop.prevent="showDeleteConfirm = true"
         >
           <Trash2 class="w-4 h-4" />
         </button>
@@ -220,23 +220,23 @@ const getAvatarUrl = () => {
 
     <!-- Post Media Attachment -->
     <div v-if="props.media && props.media.length > 0" class="mt-3 grid grid-cols-4 gap-2">
-      <div v-for="item in props.media" :key="item.id" @click.stop.prevent="openPreview(item)" class="relative overflow-hidden rounded-xl aspect-square bg-black/5 cursor-pointer group">
+      <div v-for="item in props.media" :key="item.id" class="relative overflow-hidden rounded-xl aspect-square bg-black/5 cursor-pointer group" @click.stop.prevent="openPreview(item)">
         <img
           v-if="item.mediaType?.toLowerCase() === 'image' || item.mimeType?.toLowerCase().startsWith('image/')"
           :src="getMediaUrl(item.filename || item.mediaUrl)"
           alt="Post media"
           class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-200"
-        />
+        >
         <video
           v-else-if="item.mediaType?.toLowerCase() === 'video' || item.mimeType?.toLowerCase().startsWith('video/')"
           class="absolute inset-0 w-full h-full object-cover"
           muted
         >
-          <source :src="getMediaUrl(item.filename || item.mediaUrl)" :type="item.mimeType" />
+          <source :src="getMediaUrl(item.filename || item.mediaUrl)" :type="item.mimeType" >
         </video>
         <!-- Ícone de Play sobreposto para vídeos -->
         <div v-if="item.mediaType?.toLowerCase() === 'video' || item.mimeType?.toLowerCase().startsWith('video/')" class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-80 group-hover:opacity-100 transition-opacity"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-80 group-hover:opacity-100 transition-opacity"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         </div>
       </div>
     </div>
@@ -290,13 +290,13 @@ const getAvatarUrl = () => {
     </div>
 
     <!-- Modal Confirmação -->
-    <div v-if="showDeleteConfirm" @click.stop class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4" @click.stop>
       <div class="bg-white rounded-xl p-5 w-full max-w-sm shadow-xl">
         <h3 class="text-lg font-bold text-gray-800 mb-2">Excluir Post</h3>
         <p class="text-sm text-gray-600 mb-5">Tem certeza que deseja excluir esta publicação? Esta ação não pode ser desfeita.</p>
         <div class="flex gap-3 justify-end">
-          <button @click.stop.prevent="showDeleteConfirm = false" class="px-4 py-2 text-sm text-gray-600 font-semibold hover:bg-gray-100 rounded-lg transition-colors" :disabled="isDeleting">Cancelar</button>
-          <button @click.stop.prevent="deletePost" class="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg disabled:opacity-50 transition-colors" :disabled="isDeleting">
+          <button class="px-4 py-2 text-sm text-gray-600 font-semibold hover:bg-gray-100 rounded-lg transition-colors" :disabled="isDeleting" @click.stop.prevent="showDeleteConfirm = false">Cancelar</button>
+          <button class="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg disabled:opacity-50 transition-colors" :disabled="isDeleting" @click.stop.prevent="deletePost">
             {{ isDeleting ? 'Excluindo...' : 'Excluir' }}
           </button>
         </div>
@@ -304,12 +304,12 @@ const getAvatarUrl = () => {
     </div>
 
     <!-- Full Size Media Preview Modal -->
-    <div v-if="previewMediaUrl" @click.stop.prevent="closePreview" class="fixed inset-0 z-[110] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm">
-      <button @click.stop.prevent="closePreview" class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors p-2 bg-black/50 rounded-full z-50">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <div v-if="previewMediaUrl" class="fixed inset-0 z-[110] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm" @click.stop.prevent="closePreview">
+      <button class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors p-2 bg-black/50 rounded-full z-50" @click.stop.prevent="closePreview">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
-      <img v-if="previewMediaType === 'image' || previewMediaType?.startsWith('image/')" :src="previewMediaUrl" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" @click.stop />
-      <video v-else-if="previewMediaType === 'video' || previewMediaType?.startsWith('video/')" :src="previewMediaUrl" controls autoplay class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" @click.stop></video>
+      <img v-if="previewMediaType === 'image' || previewMediaType?.startsWith('image/')" :src="previewMediaUrl" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" @click.stop >
+      <video v-else-if="previewMediaType === 'video' || previewMediaType?.startsWith('video/')" :src="previewMediaUrl" controls autoplay class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" @click.stop/>
     </div>
   </div>
 </template>
